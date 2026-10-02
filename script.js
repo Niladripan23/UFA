@@ -227,6 +227,41 @@ socket.on('connect_error', () => {
   }
 });
 
+function copyLobbyRoomCode() {
+  const codeEl = document.getElementById('lobby-room-code');
+  if (!codeEl) return;
+
+  const code = codeEl.textContent.trim();
+  if (!code || code === '------------') return;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(code).catch(() => {});
+  }
+}
+
+function renderLobbySlots(room) {
+  const row = document.getElementById('lobby-slot-row');
+  if (!row) return;
+
+  row.replaceChildren();
+
+  for (let i = 0; i < room.maxTeams; i++) {
+    const team = room.teams[i];
+    const slot = document.createElement('div');
+    slot.className = 'lobby-club-slot' + (team ? ' is-filled' : '');
+
+    const circle = document.createElement('div');
+    circle.className = 'lobby-slot-circle';
+    circle.textContent = team ? '✓' : '+';
+
+    const label = document.createElement('span');
+    label.textContent = team ? team.name : `Club ${i + 1}`;
+
+    slot.append(circle, label);
+    row.appendChild(slot);
+  }
+}
+
 // --- 4. SOCKET EVENT LISTENERS ---
 socket.on('room_joined', ({ room, myTeamId: id }) => {
   currentRoom = room;
@@ -358,6 +393,11 @@ function renderRoomState(room) {
 
   const lobbyView = document.getElementById('lobby-stage-view');
   const liveView = document.getElementById('live-stage-view');
+  const countEl = document.getElementById('connected-count');
+
+  if (countEl) {
+    countEl.textContent = `${room.teams.length}/${room.maxTeams} Joined`;
+  }
 
   // Keep the local club identity and available purse visible as room state changes.
   const myTeam = room.teams.find(t => t.id === myTeamId);
@@ -368,6 +408,8 @@ function renderRoomState(room) {
 
   // 1. Toggle between Lobby Stage (With 2 Ads) & Live Auction Floor
   if (room.status === 'LOBBY') {
+    document.body.classList.add('lobby-mode');
+
     if (lobbyView) lobbyView.style.display = 'flex';
     if (liveView) liveView.style.display = 'none';
 
@@ -375,18 +417,57 @@ function renderRoomState(room) {
     if (hostLiveControls) hostLiveControls.style.display = 'none';
 
     const phaseEl = document.getElementById('phase-indicator');
-    if (phaseEl) phaseEl.textContent = `LOBBY: WAITING FOR HOST (${room.teams.length}/${room.maxTeams})`;
-
-    const lobbyTitle = document.getElementById('lobby-wait-title');
-    if (lobbyTitle) {
-      lobbyTitle.textContent = isHost 
-        ? `You are Host (${room.teams.length}/${room.maxTeams} Clubs Connected)` 
-        : `Waiting for host to commence (${room.teams.length}/${room.maxTeams})`;
+    if (phaseEl) {
+      phaseEl.textContent = `AUCTION LOBBY • ${room.teams.length}/${room.maxTeams} CLUBS CONNECTED`;
     }
 
+    const activityTitle = document.getElementById('activity-panel-title');
+    if (activityTitle) activityTitle.textContent = 'Room Activity';
+
+    const lobbyTitle = document.getElementById('lobby-wait-title');
+    const lobbySubtitle = document.getElementById('lobby-wait-subtitle');
+    const roomCodeEl = document.getElementById('lobby-room-code');
+    const budgetEl = document.getElementById('lobby-budget');
+    const categoryEl = document.getElementById('lobby-category');
+    const maxTeamsEl = document.getElementById('lobby-max-teams');
+    const progressEl = document.getElementById('lobby-progress-text');
+    const waitNote = document.getElementById('lobby-wait-note');
+    const lobbyStartBtn = document.getElementById('lobby-start-btn');
+
+    if (lobbyTitle) lobbyTitle.textContent = isHost ? 'You are Host' : 'Auction Lobby';
+    if (lobbySubtitle) {
+      lobbySubtitle.textContent = isHost
+        ? 'Invite your friends and launch the auction when ready.'
+        : 'Waiting for the host to launch the auction.';
+    }
+
+    if (roomCodeEl) roomCodeEl.textContent = room.code;
+    if (budgetEl) budgetEl.textContent = `${room.budget} 🪙`;
+    if (categoryEl) {
+      categoryEl.textContent = room.categoryFilter === 'mixed'
+        ? 'Mixed'
+        : room.categoryFilter.replace(/\b\w/g, ch => ch.toUpperCase());
+    }
+    if (maxTeamsEl) maxTeamsEl.textContent = room.maxTeams;
+    if (progressEl) progressEl.textContent = `${room.teams.length} / ${room.maxTeams} clubs connected`;
+    if (waitNote) {
+      waitNote.textContent = room.teams.length >= room.maxTeams
+        ? 'All clubs connected. Ready for kickoff.'
+        : 'Waiting for more clubs to join...';
+    }
+    if (lobbyStartBtn) {
+      lobbyStartBtn.style.display = isHost ? 'block' : 'none';
+    }
+
+    renderLobbySlots(room);
     renderTeams(room, isHost);
     return;
   }
+
+  document.body.classList.remove('lobby-mode');
+
+  const activityTitle = document.getElementById('activity-panel-title');
+  if (activityTitle) activityTitle.textContent = 'Live Auction Stream';
 
   // 2. Status is LIVE: Hide Lobby Ads, Show Player Auction Card & Controls
   if (lobbyView) lobbyView.style.display = 'none';
@@ -394,9 +475,6 @@ function renderRoomState(room) {
 
   if (hostStartBtn) hostStartBtn.style.display = 'none';
   if (hostLiveControls) hostLiveControls.style.display = isHost ? 'flex' : 'none';
-
-  const countEl = document.getElementById('connected-count');
-  if (countEl) countEl.textContent = `${room.teams.length}/${room.maxTeams} Joined`;
 
   const item = room.pool[room.currentIndex];
   if (!item) return;
@@ -566,6 +644,7 @@ function renderTeams(room, isHost) {
             <div class="team-name-line">
               <span class="team-name">${t.name}</span>
               ${isMe ? '<span class="you-badge">YOU</span>' : ''}
+              ${room.status === 'LOBBY' && t.isHost ? '<span class="host-badge">HOST</span>' : ''}
             </div>
             ${canKick ? `<button type="button" class="btn-kick" onclick="handleKickTeam('${t.id}')">Kick</button>` : ''}
           </div>
@@ -606,6 +685,21 @@ function renderTeams(room, isHost) {
       </div>
     `;
   }).join('');
+
+  if (room.status === 'LOBBY' && room.teams.length < room.maxTeams) {
+    const waitingCount = room.maxTeams - room.teams.length;
+    const waitingSlots = Array.from({ length: waitingCount }, (_, index) => `
+      <div class="team-card waiting-team-card">
+        <div class="waiting-team-index">${room.teams.length + index + 1}</div>
+        <div class="waiting-team-copy">
+          <strong>Waiting for Club</strong>
+          <span>Share the room code to join</span>
+        </div>
+      </div>
+    `).join('');
+
+    container.insertAdjacentHTML('beforeend', waitingSlots);
+  }
 }
 
 function logEvent(msg, type) {
