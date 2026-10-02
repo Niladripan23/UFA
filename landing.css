@@ -1301,3 +1301,394 @@ body.modal-open {
     font-size: 0.78rem;
   }
 }
+
+
+/* =========================================================
+   UFA™ LIGHT HOME THEME
+   Keeps the game-menu structure while matching the auction UI.
+   ========================================================= */
+:root {
+  --bg: #f8fafc;
+  --bg-soft: #f1f5f9;
+  --panel: #ffffff;
+  --panel-strong: #ffffff;
+  --panel-light: #f8fafc;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  --text: #0f172a;
+  --muted: #64748b;
+  --muted-2: #94a3b8;
+  --green: #10b981;
+  --green-strong: #059669;
+  --green-soft: #ecfdf5;
+  --gold: #d6a94f;
+  --red: #ef4444;
+  --cyan: #0284c7;
+  --shadow: 0 18px 46px rgba(15, 23, 42, 0.10);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.stadium-scene {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.06), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 56%, #f1f5f9 100%);
+}
+
+.stadium-scene::before {
+  background:
+    linear-gradient(90deg, transparent 0 9%, rgba(15, 23, 42, 0.025) 9% 9.15%, transparent 9.15% 90%, rgba(15, 23, 42, 0.025) 90% 90.15%, transparent 90.15%),
+    repeating-linear-gradient(90deg, rgba(15,23,42,0.018) 0 2px, transparent 2px 80px);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.38), transparent 72%);
+}
+
+.stadium-light {
+  opacity: 0.06;
+  filter: blur(30px);
+}
+
+.stadium-light-left,
+.stadium-light-right {
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.28), transparent 72%);
+}
+
+.pitch-grid {
+  border-color: rgba(16, 185, 129, 0.10);
+  background:
+    linear-gradient(90deg, transparent 49.8%, rgba(16, 185, 129, 0.08) 50%, transparent 50.2%),
+    linear-gradient(rgba(16, 185, 129, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.035) 1px, transparent 1px);
+  opacity: 0.4;
+}
+
+.pitch-grid::before {
+  border-color: rgba(16, 185, 129, 0.10);
+}
+
+.stadium-vignette {
+  background: radial-gradient(circle at 50% 42%, transparent 0 48%, rgba(15,23,42,0.015) 72%, rgba(15,23,42,0.05) 100%);
+}
+
+.game-topbar {
+  border-bottom-color: #e2e8f0;
+}
+
+.brand-lockup {
+  color: #0f172a;
+}
+
+.brand-mark {
+  border-color: #0f172a;
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.10);
+}
+
+.brand-tm {
+  color: #f3c969;
+}
+
+.brand-copy span {
+  color: #94a3b8;
+}
+
+.top-action {
+  color: #64748b;
+}
+
+.top-action:hover {
+  color: #0f172a;
+  border-color: #e2e8f0;
+  background: #ffffff;
+}
+
+.menu-kicker {
+  color: #64748b;
+}
+
+.status-dot {
+  background: #10b981;
+  box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.08);
+}
+
+.hero-ufa {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+.hero-brand sup,
+.hero-brand-sub {
+  color: #b7791f;
+}
+
+.menu-zone h1 {
+  color: #0f172a;
+}
+
+.menu-zone h1 span,
+.hero-copy {
+  color: #64748b;
+}
+
+.menu-button {
+  border-color: #e2e8f0;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.035);
+  backdrop-filter: blur(8px);
+}
+
+.menu-button:hover {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.menu-button-primary {
+  border-color: #0f172a;
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
+}
+
+.menu-button-primary:hover {
+  border-color: #1e293b;
+  background: #172033;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22);
+}
+
+.menu-button-primary .menu-button-copy small {
+  color: #94a3b8;
+}
+
+.menu-button-primary .menu-arrow {
+  color: #f3c969;
+}
+
+.menu-button-icon {
+  background: #f3c969;
+  color: #3c2a08;
+  box-shadow: none;
+}
+
+.menu-button-index {
+  color: #94a3b8;
+}
+
+.menu-button-copy small {
+  color: #94a3b8;
+}
+
+.menu-arrow {
+  color: #64748b;
+}
+
+.menu-button:hover .menu-arrow {
+  color: #0f172a;
+}
+
+.game-fact {
+  border-top-color: #e2e8f0;
+}
+
+.game-fact strong {
+  color: #0f172a;
+}
+
+.game-fact span {
+  color: #94a3b8;
+}
+
+.auction-showcase {
+  border-color: #dbe3ec;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.10);
+  color: #0f172a;
+}
+
+.auction-showcase::before {
+  background: linear-gradient(115deg, transparent 0 40%, rgba(15,23,42,0.025) 50%, transparent 60%);
+}
+
+.showcase-topline strong {
+  color: #0f172a;
+}
+
+.eyebrow {
+  color: #94a3b8;
+}
+
+.preview-live {
+  color: #059669;
+}
+
+.preview-live i {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16,185,129,0.28);
+}
+
+.lot-meta {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.hammer-clock strong {
+  color: #b7791f;
+}
+
+.featured-card {
+  border-color: rgba(214, 169, 79, 0.34);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+.bid-preview {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+}
+
+.current-price span,
+.leading-club span {
+  color: #94a3b8;
+}
+
+.current-price strong {
+  color: #0284c7;
+}
+
+.leading-club strong {
+  color: #0f172a;
+}
+
+.fake-bid-button {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.16);
+}
+
+.fake-bid-button span {
+  background: rgba(15,23,42,0.10);
+}
+
+.showcase-note {
+  color: #94a3b8;
+}
+
+.bottom-deck {
+  border-color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+}
+
+.deck-step {
+  color: #b7791f;
+}
+
+.deck-card strong {
+  color: #0f172a;
+}
+
+.deck-card p {
+  color: #94a3b8;
+}
+
+.deck-divider {
+  background: #e2e8f0;
+}
+
+.sponsor-label {
+  color: #94a3b8;
+}
+
+.ad-placeholder-horizontal {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  color: #94a3b8;
+}
+
+.game-footer {
+  border-top-color: #e2e8f0;
+}
+
+.footer-left strong {
+  color: #0f172a;
+}
+
+.footer-left span,
+.footer-disclaimer {
+  color: #94a3b8;
+}
+
+.footer-links button {
+  color: #64748b;
+}
+
+.footer-links button:hover {
+  color: #0f172a;
+}
+
+.modal-backdrop {
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(8px);
+}
+
+.modal-card {
+  border-color: #dbe3ec;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+}
+
+.modal-head {
+  border-bottom-color: #e2e8f0;
+}
+
+.modal-kicker {
+  color: #b7791f;
+}
+
+.btn-close {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.btn-close:hover {
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.rule-block {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+}
+
+.rule-block > span {
+  color: #b7791f;
+}
+
+.rule-block p,
+.prose-body p {
+  color: #64748b;
+}
+
+.about-signoff {
+  border-left-color: #10b981;
+  background: #ecfdf5;
+}
+
+.about-signoff span {
+  color: #64748b;
+}
+
+.modal-play-button {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.modal-play-button:hover {
+  background: #1e293b;
+}
