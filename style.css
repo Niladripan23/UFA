@@ -469,11 +469,11 @@ body.lobby-mode .log-panel {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 18% 18%, rgba(255,255,255,0.11), transparent 20%),
-    radial-gradient(circle at 82% 18%, rgba(255,255,255,0.11), transparent 20%),
-    linear-gradient(180deg, rgba(9, 24, 40, 0.58), rgba(2, 10, 17, 0.84));
+    linear-gradient(180deg, rgba(4, 14, 26, 0.48), rgba(2, 9, 16, 0.76)),
+    url("4af66e87-0e4c-42ad-8195-5af103e2c8ac.png");
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   opacity: 1;
 }
 
