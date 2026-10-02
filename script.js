@@ -276,6 +276,13 @@ function renderRoomState(room) {
   const lobbyView = document.getElementById('lobby-stage-view');
   const liveView = document.getElementById('live-stage-view');
 
+  // Keep the local club identity and available purse visible as room state changes.
+  const myTeam = room.teams.find(t => t.id === myTeamId);
+  const clubDisplay = document.getElementById('my-club-display');
+  if (clubDisplay && myTeam) {
+    clubDisplay.textContent = `${myTeam.name} • ${myTeam.purse} 🪙`;
+  }
+
   // 1. Toggle between Lobby Stage (With 2 Ads) & Live Auction Floor
   if (room.status === 'LOBBY') {
     if (lobbyView) lobbyView.style.display = 'flex';
@@ -377,11 +384,31 @@ function renderRoomState(room) {
     `;
   }
 
-  // Slab & Bidding buttons
+  // Slab & bidding presentation.
+  // This changes only what the player sees; the server remains the authority for bids.
   const slabInc = room.currentBid < 50 ? 2 : (room.currentBid <= 100 ? 5 : 10);
   const nextBid = !room.highestBidder ? item.baseprice : room.currentBid + slabInc;
+  const bidButton = document.getElementById('btn-raise-bid');
+
   document.getElementById('next-bid-val').textContent = nextBid;
-  document.getElementById('btn-bid-amount').textContent = room.highestBidder ? `+${slabInc}` : `Open @ ${nextBid}`;
+
+  if (bidButton) {
+    bidButton.innerHTML = `BID <span id="btn-bid-amount">${nextBid} 🪙</span>`;
+
+    if (myTeam) {
+      const purseAfterBid = myTeam.purse - nextBid;
+      bidButton.title = purseAfterBid >= 0
+        ? `Purse after bid: ${purseAfterBid} coins`
+        : 'Insufficient coins for this bid';
+      bidButton.setAttribute(
+        'aria-label',
+        purseAfterBid >= 0
+          ? `Bid ${nextBid} coins. ${purseAfterBid} coins would remain.`
+          : `Bid ${nextBid} coins. Insufficient coins.`
+      );
+    }
+  }
+
   document.getElementById('pass-counter').textContent = `${room.passedTeamIds.length}/${room.teams.length}`;
 
   renderTeams(room, isHost);
