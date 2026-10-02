@@ -371,95 +371,414 @@ body {
   position: relative;
 }
 
-/* LOBBY STAGE VIEW (WAITING AD DISPLAY) */
+/* LOBBY STAGE VIEW */
 .lobby-stage-view {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  height: 100%;
+  gap: 12px;
+  padding: 0;
+}
+
+body.lobby-mode .app-header {
+  background: #081629;
+  border-bottom-color: #142a43;
+  color: #ffffff;
+}
+
+body.lobby-mode .logo-badge {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+body.lobby-mode .brand-title {
+  color: #ffffff;
+}
+
+body.lobby-mode .room-status {
+  background: #10243a;
+  color: #e5edf6;
+}
+
+body.lobby-mode .btn-ai-open {
+  background: #ffffff;
+}
+
+body.lobby-mode .center-stage {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+body.lobby-mode .team-panel,
+body.lobby-mode .log-panel {
+  overflow: hidden;
+}
+
+.lobby-top-ad,
+.side-ad-slot {
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  color: #94a3b8;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  gap: 20px;
-  padding: 10px;
+  text-align: center;
+}
+
+.lobby-top-ad {
+  width: min(728px, 100%);
+  height: 90px;
+  margin: 0 auto;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lobby-top-ad span,
+.side-ad-slot span {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.lobby-top-ad strong,
+.side-ad-slot strong {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.lobby-hero-shell {
+  position: relative;
+  min-height: 620px;
+  overflow: hidden;
+  border: 1px solid #24384f;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(4, 12, 22, 0.18), rgba(2, 9, 16, 0.72)),
+    linear-gradient(145deg, #102238, #07111e 58%, #06101b);
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.14);
+}
+
+/* Future generated stadium image goes here via background-image. */
+.lobby-hero-media {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 18% 18%, rgba(255,255,255,0.11), transparent 20%),
+    radial-gradient(circle at 82% 18%, rgba(255,255,255,0.11), transparent 20%),
+    linear-gradient(180deg, rgba(9, 24, 40, 0.58), rgba(2, 10, 17, 0.84));
+  background-size: cover;
+  background-position: center;
+  opacity: 1;
+}
+
+.lobby-hero-media::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -20%;
+  height: 46%;
+  border: 1px solid rgba(46, 230, 138, 0.18);
+  border-radius: 50%;
+  box-shadow: 0 0 100px rgba(46, 230, 138, 0.05);
+}
+
+.lobby-hero-content {
+  position: relative;
+  z-index: 2;
+  width: min(760px, calc(100% - 34px));
+  margin: 0 auto;
+  padding: 28px 0 24px;
+  color: #f8fafc;
+}
+
+.pill-tag-mini {
+  display: table;
+  margin: 0 auto 14px;
+  padding: 5px 14px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #ffe6a3, #ddb15a);
+  color: #3f2b07;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .lobby-welcome-banner {
   text-align: center;
 }
 
-.pill-tag-mini {
-  display: inline-block;
-  background: var(--accent-gold-bg);
-  color: var(--accent-gold);
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 0.7rem;
-  padding: 2px 10px;
-  border-radius: 999px;
-  margin-bottom: 6px;
-}
-
 .lobby-welcome-banner h2 {
+  margin-bottom: 5px;
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  margin-bottom: 4px;
+  font-size: clamp(2rem, 4vw, 3.15rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
 
-.ad-slot-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  width: 100%;
+.lobby-welcome-banner p {
+  color: #c8d3df;
+  font-size: 0.9rem;
 }
 
-.ad-pill-label {
-  font-size: 0.6rem;
-  color: var(--text-subtle);
-  font-weight: 700;
-  letter-spacing: 0.5px;
+.lobby-room-code-card,
+.lobby-config-grid,
+.lobby-progress-card {
+  background: rgba(6, 17, 29, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  backdrop-filter: blur(10px);
 }
 
-.ad-box-lobby-video {
-  width: 100%;
-  max-width: 520px;
-  height: 280px;
-  background: #ffffff;
-  border: 2px dashed var(--panel-border);
+.lobby-room-code-card {
+  margin-top: 24px;
+  padding: 15px 18px;
   border-radius: 12px;
+  text-align: center;
+}
+
+.lobby-room-code-card > span {
+  color: #a7b6c8;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+}
+
+.lobby-room-code-row {
+  margin-top: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
-.ad-inner-content {
+.lobby-room-code-row > strong {
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  letter-spacing: 0.015em;
+}
+
+.btn-copy-code {
+  min-height: 38px;
+  padding: 7px 13px;
+  border: 1px solid #5c728a;
+  border-radius: 8px;
+  background: #10243a;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-copy-code:hover {
+  background: #17314f;
+}
+
+.lobby-config-grid {
+  margin-top: 12px;
+  padding: 13px 12px;
+  border-radius: 11px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.lobby-config-item {
+  min-width: 0;
+  padding: 0 14px;
+  text-align: center;
+}
+
+.lobby-config-item + .lobby-config-item {
+  border-left: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+.lobby-config-item span {
+  display: block;
+  color: #aab7c6;
+  font-size: 0.66rem;
+}
+
+.lobby-config-item strong {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.lobby-progress-card {
+  margin-top: 12px;
+  padding: 14px 16px 15px;
+  border-radius: 11px;
+  text-align: center;
+}
+
+.lobby-progress-card > strong {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+}
+
+.lobby-slot-row {
+  margin: 14px auto;
+  display: flex;
+  justify-content: center;
+  gap: clamp(12px, 3vw, 28px);
+  flex-wrap: wrap;
+}
+
+.lobby-club-slot {
+  width: 72px;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  color: #9fb0c3;
+  font-size: 0.63rem;
+  font-weight: 700;
+}
+
+.lobby-slot-circle {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #7790a9;
+  border-radius: 50%;
+  color: #a9b8c7;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+.lobby-club-slot.is-filled {
+  color: #f8fafc;
+}
+
+.lobby-club-slot.is-filled .lobby-slot-circle {
+  border-style: solid;
+  border-color: #f3c969;
+  background: rgba(243, 201, 105, 0.12);
+  color: #66e6a5;
+  box-shadow: 0 0 22px rgba(243, 201, 105, 0.16);
+}
+
+.lobby-start-btn {
+  width: min(530px, 100%);
+  min-height: 54px;
+  margin: 4px auto 0;
+  border: 0;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #ffe29a, #d7aa50);
+  color: #241704;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+}
+
+.lobby-start-btn:hover {
+  filter: brightness(1.04);
+}
+
+.lobby-wait-note {
+  margin-top: 9px;
+  color: #aab7c6;
+  font-size: 0.69rem;
+}
+
+.lobby-only-ad {
+  display: none;
+}
+
+body.lobby-mode .lobby-only-ad {
+  display: flex;
+}
+
+.side-ad-slot {
+  flex-shrink: 0;
+  margin: 0 12px 12px;
+  border-radius: 8px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.side-ad-left {
+  height: 90px;
+}
+
+.side-ad-right {
+  min-height: 250px;
+}
+
+body.lobby-mode .teams-container {
+  max-height: none;
+  flex: 1;
+}
+
+body.lobby-mode .log-stream {
+  flex: 1;
+  max-height: none;
+}
+
+.host-badge {
+  flex-shrink: 0;
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.waiting-team-card {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-style: dashed;
+  background: #fbfdff;
+  color: #64748b;
+}
+
+.waiting-team-index {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #eef2f7;
+  color: #64748b;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.waiting-team-copy {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
-.ad-dimension {
+.waiting-team-copy strong {
+  color: #334155;
   font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-dim);
+  font-size: 0.76rem;
 }
 
-.ad-subtext {
-  font-size: 0.7rem;
-  color: var(--text-subtle);
-}
-
-.ad-box-lobby-slim {
-  width: 100%;
-  max-width: 480px;
-  height: 60px;
-  background: #ffffff;
-  border: 1px dashed var(--panel-border);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.waiting-team-copy span {
+  color: #94a3b8;
+  font-size: 0.64rem;
 }
 
 /* LIVE STAGE VIEW */
@@ -1308,6 +1627,31 @@ body {
   }
 }
 
+@media (max-width: 900px) {
+  .lobby-config-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .lobby-config-item {
+    padding: 4px 0;
+  }
+
+  .lobby-config-item + .lobby-config-item {
+    border-left: 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+    padding-top: 10px;
+  }
+
+  .lobby-hero-shell {
+    min-height: 560px;
+  }
+
+  .side-ad-right {
+    min-height: 180px;
+  }
+}
+
 @media (max-width: 760px) {
   body {
     min-width: 0;
@@ -1365,6 +1709,40 @@ body {
   .auction-grid {
     padding: 10px;
     gap: 10px;
+  }
+
+  .lobby-top-ad {
+    height: 64px;
+  }
+
+  .lobby-hero-shell {
+    min-height: 0;
+  }
+
+  .lobby-hero-content {
+    width: calc(100% - 24px);
+    padding: 22px 0 18px;
+  }
+
+  .lobby-room-code-row {
+    gap: 9px;
+  }
+
+  .lobby-room-code-row > strong {
+    font-size: 1.4rem;
+  }
+
+  .lobby-slot-row {
+    gap: 12px;
+  }
+
+  .lobby-club-slot {
+    width: 60px;
+  }
+
+  .lobby-slot-circle {
+    width: 46px;
+    height: 46px;
   }
 
   .center-stage {
