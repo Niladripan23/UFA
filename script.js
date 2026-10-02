@@ -2,7 +2,15 @@
 // UFA — CLIENT ENGINE (Optimized 3-2-1, Phase Ads & Fixed Stage)
 // ====================================================
 
-const socket = io();
+const UFA_BACKEND_URL = window.location.hostname.endsWith('github.io')
+  ? 'https://ufa-football.onrender.com'
+  : window.location.origin;
+
+const socket = io(UFA_BACKEND_URL, {
+  reconnection: true,
+  reconnectionAttempts: 10,
+  timeout: 20000
+});
 
 let currentRoom = null;
 let myTeamId = null;
@@ -194,6 +202,32 @@ function showLotResult(roomSnapshot) {
     lotResultTimer = null;
   }, 700);
 }
+
+socket.on('connect', () => {
+  const phaseIndicator = document.getElementById('phase-indicator');
+  const liveDot = document.getElementById('live-dot');
+
+  if (phaseIndicator && !currentRoom) {
+    phaseIndicator.textContent = 'LOBBY: SERVER CONNECTED';
+  }
+
+  if (liveDot) {
+    liveDot.style.background = 'var(--accent-green)';
+  }
+});
+
+socket.on('connect_error', () => {
+  const phaseIndicator = document.getElementById('phase-indicator');
+  const liveDot = document.getElementById('live-dot');
+
+  if (phaseIndicator && !currentRoom) {
+    phaseIndicator.textContent = 'CONNECTING TO AUCTION SERVER...';
+  }
+
+  if (liveDot) {
+    liveDot.style.background = 'var(--accent-amber)';
+  }
+});
 
 // --- 4. SOCKET EVENT LISTENERS ---
 socket.on('room_joined', ({ room, myTeamId: id }) => {
