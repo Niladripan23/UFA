@@ -119,6 +119,12 @@
         <span class="hint" id="connected-count">0/4 Joined</span>
       </div>
       <div class="teams-container" id="teams-list"></div>
+
+      <!-- Reserved ad inventory: real ad code can be mounted here later -->
+      <div class="side-ad-slot side-ad-left lobby-only-ad" aria-label="Advertisement space">
+        <span>ADVERTISEMENT</span>
+        <strong>300 × 90</strong>
+      </div>
     </aside>
 
     <!-- CENTER: STAGE (LOBBY ADS OR LIVE AUCTION) -->
@@ -132,22 +138,57 @@
           <p class="hint" id="lobby-wait-subtitle">Clubs are assembling. Prepare your tactical allocations.</p>
         </div>
 
-        <!-- TOP AD: BIGGER / VIDEO AD SLOT -->
-        <div class="ad-slot-wrapper ad-slot-lobby-top">
-          <span class="ad-pill-label">SPONSORED VIDEO AD</span>
-          <div class="ad-box-lobby-video">
-            <div class="ad-inner-content">
-              <span class="ad-dimension">480 × 270 (16:9 Video Ad Slot)</span>
-              <span class="ad-subtext">Video / Rich-Media Placement</span>
-            </div>
-          </div>
+        <!-- Reserved leaderboard ad inventory -->
+        <div class="lobby-top-ad" aria-label="Advertisement space">
+          <span>ADVERTISEMENT</span>
+          <strong>728 × 90</strong>
         </div>
 
-        <!-- BOTTOM AD: SLIM & STATIC BANNER SLOT -->
-        <div class="ad-slot-wrapper ad-slot-lobby-bottom">
-          <span class="ad-pill-label">SPONSORED BANNER</span>
-          <div class="ad-box-lobby-slim">
-            <span class="ad-dimension">468 × 60 Slim Static Banner Slot</span>
+        <!-- Future stadium artwork holder. Add background-image later without changing markup. -->
+        <div class="lobby-hero-shell">
+          <div class="lobby-hero-media" aria-hidden="true"></div>
+
+          <div class="lobby-hero-content">
+            <div class="pill-tag-mini">LOBBY LOUNGE</div>
+
+            <div class="lobby-welcome-banner">
+              <h2 id="lobby-wait-title">You are Host</h2>
+              <p id="lobby-wait-subtitle">Invite your friends and launch the auction when ready.</p>
+            </div>
+
+            <div class="lobby-room-code-card">
+              <span>ROOM CODE</span>
+              <div class="lobby-room-code-row">
+                <strong id="lobby-room-code">------------</strong>
+                <button type="button" class="btn-copy-code" onclick="copyLobbyRoomCode()">Copy Code</button>
+              </div>
+            </div>
+
+            <div class="lobby-config-grid">
+              <div class="lobby-config-item">
+                <span>Starting Budget</span>
+                <strong id="lobby-budget">500 🪙</strong>
+              </div>
+              <div class="lobby-config-item">
+                <span>Player Pool</span>
+                <strong id="lobby-category">Mixed</strong>
+              </div>
+              <div class="lobby-config-item">
+                <span>Max Clubs</span>
+                <strong id="lobby-max-teams">4</strong>
+              </div>
+            </div>
+
+            <div class="lobby-progress-card">
+              <strong id="lobby-progress-text">1 / 4 clubs connected</strong>
+              <div class="lobby-slot-row" id="lobby-slot-row"></div>
+
+              <button type="button" id="lobby-start-btn" class="lobby-start-btn" onclick="handleStartAuction(event)">
+                START AUCTION ▶
+              </button>
+
+              <p class="lobby-wait-note" id="lobby-wait-note">Waiting for more clubs to join...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -245,10 +286,16 @@
     <!-- RIGHT: LIVE LOG -->
     <aside class="panel log-panel">
       <div class="panel-header">
-        <h3>Live Auction Stream</h3>
+        <h3 id="activity-panel-title">Live Auction Stream</h3>
         <span class="badge-live">ONLINE</span>
       </div>
       <div class="log-stream" id="log-stream"></div>
+
+      <!-- Reserved ad inventory: real ad code can be mounted here later -->
+      <div class="side-ad-slot side-ad-right lobby-only-ad" aria-label="Advertisement space">
+        <span>ADVERTISEMENT</span>
+        <strong>300 × 250</strong>
+      </div>
     </aside>
   </main>
 
