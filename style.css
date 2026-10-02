@@ -547,6 +547,81 @@ body {
   opacity: 0.75;
 }
 
+/* SHORT SOLD / UNSOLD RESULT MOMENT */
+.lot-result-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at center, rgba(243, 201, 105, 0.12), transparent 36%),
+    rgba(8, 17, 28, 0.97);
+  color: #f8fafc;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.985);
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+  pointer-events: none;
+}
+
+.lot-result-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+.lot-result-kicker {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--accent-gold);
+}
+
+.lot-result-player {
+  max-width: 88%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: #ffffff;
+}
+
+.lot-result-detail {
+  max-width: 88%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.lot-result-overlay.is-sold {
+  box-shadow: inset 0 0 0 1px rgba(243, 201, 105, 0.18);
+}
+
+.lot-result-overlay.is-unsold {
+  background:
+    radial-gradient(circle at center, rgba(148, 163, 184, 0.09), transparent 36%),
+    rgba(8, 17, 28, 0.97);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.15);
+}
+
+.lot-result-overlay.is-unsold .lot-result-kicker {
+  color: #94a3b8;
+}
+
 /* 3-2-1 SUSPENSE OVERLAY: CLEAN AUCTION CARD TRANSITION */
 .interstitial-overlay {
   position: absolute;
