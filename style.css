@@ -193,46 +193,89 @@ body {
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
   overflow-y: auto;
   max-height: calc(100vh - 120px);
 }
 
 .team-card {
+  position: relative;
   background: #f8fafc;
   border: 1px solid var(--panel-border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  transition: all 0.15s;
+  border-radius: 10px;
+  padding: 11px 12px;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.team-card.is-me {
+  border-color: #bfdbfe;
+  box-shadow: inset 3px 0 0 #38bdf8;
 }
 
 .team-card.is-leader {
-  border-color: var(--accent-gold);
-  background: #fffbeb;
+  border-color: #f0c36a;
+  background: #fffaf0;
+  box-shadow: inset 3px 0 0 #d59a2c;
 }
 
 .team-card.has-passed {
-  opacity: 0.55;
+  opacity: 0.62;
   background: #f1f5f9;
+}
+
+.team-card.is-leader.has-passed {
+  opacity: 1;
 }
 
 .team-meta {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .team-name-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.team-name-line {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .team-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.85rem;
+  font-weight: 800;
+  font-size: 0.84rem;
+}
+
+.you-badge {
+  flex-shrink: 0;
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.team-finance {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
 }
 
 .team-purse {
@@ -240,18 +283,81 @@ body {
   font-weight: 800;
   font-size: 0.85rem;
   color: var(--accent-gold);
+  line-height: 1;
 }
 
-.team-roster-count {
+.team-state {
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+
+.team-state-active {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.team-state-leading {
+  background: #fef3c7;
+  color: #a16207;
+}
+
+.team-state-passed {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.team-quota-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.quota-item {
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  padding: 5px 2px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.quota-item.is-complete {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.quota-icon {
   font-size: 0.7rem;
-  color: var(--text-dim);
+  line-height: 1;
+}
+
+.quota-label {
+  color: var(--text-subtle);
+  font-size: 0.46rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.quota-item strong {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  line-height: 1.1;
+}
+
+.quota-item.is-complete strong {
+  color: #15803d;
 }
 
 .btn-kick {
   background: none;
   border: none;
   color: var(--accent-red);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
   cursor: pointer;
   padding: 2px 4px;
