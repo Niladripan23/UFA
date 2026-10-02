@@ -470,17 +470,55 @@ function renderTeams(room, isHost) {
     const def = t.squad.filter(p => p.primaryRole === 'defender').length;
     const gk = t.squad.filter(p => p.primaryRole === 'goalkeeper').length;
 
+    const statusBadge = isLeader
+      ? '<span class="team-state team-state-leading">LEADING</span>'
+      : hasPassed
+        ? '<span class="team-state team-state-passed">PASSED</span>'
+        : '<span class="team-state team-state-active">ACTIVE</span>';
+
     return `
-      <div class="team-card ${isLeader ? 'is-leader' : ''} ${hasPassed ? 'has-passed' : ''}">
+      <div class="team-card ${isLeader ? 'is-leader' : ''} ${hasPassed ? 'has-passed' : ''} ${isMe ? 'is-me' : ''}">
         <div class="team-meta">
           <div class="team-name-wrap">
-            <span class="team-name">${t.name} ${isMe ? '(You)' : ''}</span>
+            <div class="team-name-line">
+              <span class="team-name">${t.name}</span>
+              ${isMe ? '<span class="you-badge">YOU</span>' : ''}
+            </div>
             ${canKick ? `<button type="button" class="btn-kick" onclick="handleKickTeam('${t.id}')">Kick</button>` : ''}
           </div>
-          <span class="team-purse">${t.purse} 🪙</span>
+
+          <div class="team-finance">
+            <span class="team-purse">${t.purse} 🪙</span>
+            ${statusBadge}
+          </div>
         </div>
-        <div class="team-roster-count">
-          👔 M: ${m}/1 | ⚡ F: ${fwd}/4 | 🎯 M: ${mid}/3 | 🛡️ D: ${def}/3 | 🧤 GK: ${gk}/1
+
+        <div class="team-quota-grid" aria-label="Squad progress">
+          <div class="quota-item ${m >= 1 ? 'is-complete' : ''}">
+            <span class="quota-icon">👔</span>
+            <span class="quota-label">MGR</span>
+            <strong>${m}/1</strong>
+          </div>
+          <div class="quota-item ${fwd >= 4 ? 'is-complete' : ''}">
+            <span class="quota-icon">⚡</span>
+            <span class="quota-label">FWD</span>
+            <strong>${fwd}/4</strong>
+          </div>
+          <div class="quota-item ${mid >= 3 ? 'is-complete' : ''}">
+            <span class="quota-icon">🎯</span>
+            <span class="quota-label">MID</span>
+            <strong>${mid}/3</strong>
+          </div>
+          <div class="quota-item ${def >= 3 ? 'is-complete' : ''}">
+            <span class="quota-icon">🛡️</span>
+            <span class="quota-label">DEF</span>
+            <strong>${def}/3</strong>
+          </div>
+          <div class="quota-item ${gk >= 1 ? 'is-complete' : ''}">
+            <span class="quota-icon">🧤</span>
+            <span class="quota-label">GK</span>
+            <strong>${gk}/1</strong>
+          </div>
         </div>
       </div>
     `;
