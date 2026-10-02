@@ -1,277 +1,360 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Primary Meta Tags -->
-<title>UFA | Real-Time Multiplayer Football Draft & Auction Arena</title>
-<meta name="title" content="UFA | Real-Time Multiplayer Football Draft & Auction Arena">
-<meta name="description" content="Host private, live-action football auctions with friends. Zero latency, 440+ legendary cards, manager tactics, and instant multiplayer draft rooms in your browser.">
-<meta name="keywords" content="football auction game, live draft simulator, online soccer auction with friends, fifa card draft room, multiplayer football bid engine">
-<meta name="author" content="Emon">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://ufa-football.onrender.com/">
-
-<!-- Open Graph / WhatsApp / Discord Embeds -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://ufa-football.onrender.com/">
-<meta property="og:title" content="UFA | Live Football Draft & Auction Floor">
-<meta property="og:description" content="Create a private room, bid against friends in real time, and build your dream 12-man squad. No app install required.">
-
-<!-- Twitter Cards -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="https://ufa-football.onrender.com/">
-<meta property="twitter:title" content="UFA | Live Football Draft & Auction Floor">
-<meta property="twitter:description" content="Host live bidding wars for prime football legends and wonderkids right in your browser.">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Ultimate Football Auction",
-  "alternateName": "UFA",
-  "url": "https://ufa-football.onrender.com",
-  "applicationCategory": "GameApplication",
-  "operatingSystem": "All modern web browsers",
-  "creator": {
-    "@type": "Person",
-    "name": "Emon"
-  },
-  "description": "A low-latency, real-time multiplayer football auction platform engineered for competitive fantasy leagues and sports communities.",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  }
-}
-</script>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050a12" />
+  <title>UFA™ — Ultimate Football Auction</title>
+  <meta
+    name="description"
+    content="UFA™ is a real-time private football auction game. Create a room, invite your friends, bid under pressure, and build your ultimate squad."
+  />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="landing.css" />
 </head>
-<body>
+<body class="game-home">
 
-  <!-- TOP NAV BAR -->
-  <header class="landing-header">
-    <div class="brand">
-      <div class="logo-badge">UFA™</div>
-      <span class="brand-title">Ultimate Football Auction</span>
-    </div>
-    <nav class="nav-links">
-      <a href="#features">Features</a>
-      <a href="javascript:void(0)" onclick="openModal('rules-modal')">How to Play</a>
-      <a href="javascript:void(0)" onclick="openModal('about-modal')">About</a>
-      <button type="button" class="btn-primary-nav" onclick="launchArena()">Launch Game ▶</button>
+  <div class="stadium-scene" aria-hidden="true">
+    <div class="stadium-light stadium-light-left"></div>
+    <div class="stadium-light stadium-light-right"></div>
+    <div class="pitch-grid"></div>
+    <div class="stadium-vignette"></div>
+  </div>
+
+  <header class="game-topbar">
+    <a class="brand-lockup" href="/" aria-label="UFA home">
+      <div class="brand-mark">UFA<span class="brand-tm">™</span></div>
+      <div class="brand-copy">
+        <strong>Ultimate Football Auction</strong>
+        <span>Private Multiplayer Draft Room</span>
+      </div>
+    </a>
+
+    <nav class="top-actions" aria-label="Primary">
+      <button type="button" class="top-action" onclick="openModal('rules-modal')">How to Play</button>
+      <button type="button" class="top-action" onclick="openModal('about-modal')">About</button>
     </nav>
   </header>
 
-  <!-- MAIN DUAL-COLUMN CONTAINER -->
-  <div class="landing-container">
-    <main class="content-column">
-      
-      <!-- HERO BANNER -->
-      <section class="hero-section">
-        <div class="pill-tag">⚡ Multiplayer Real-Time Draft Engine</div>
-        <h1 class="hero-title">Dominate The Tactical Football Auction With Your Friends.</h1>
-        <p class="hero-sub">
-          Host private live draft rooms with friends. Real-time 12-second bidding timers, suspenseful lot reveals, authentic role quotas, with slabs-style bidding embedded.
-        </p>
-        
-        <div class="cta-row">
-          <button type="button" class="btn-hero-cta" onclick="launchArena()">
-            Let's Begin ▶
-          </button>
-          <button type="button" class="btn-secondary-cta" onclick="openModal('rules-modal')">
-            Read Rules & Quotas
-          </button>
-        </div>
+  <main class="game-shell">
+    <section class="menu-zone" aria-labelledby="main-title">
+      <div class="menu-kicker">
+        <span class="status-dot"></span>
+        REAL-TIME PRIVATE AUCTION
+      </div>
 
-        <div class="stats-counter-strip">
-          <div class="mini-stat">
-            <strong>12s</strong>
-            <span>Bidding Clock</span>
-          </div>
-          <div class="mini-stat">
-            <strong>3s</strong>
-            <span>Players Reveal</span>
-          </div>
-          <div class="mini-stat">
-            <strong>4–6</strong>
-            <span>Clubs Per Room</span>
-          </div>
-          <div class="mini-stat">
-            <strong>100%</strong>
-            <span>Realtime Synced</span>
-          </div>
-        </div>
-      </section>
+      <div class="hero-brand" aria-label="UFA trademark">
+        <span class="hero-ufa">UFA</span><sup>™</sup>
+      </div>
 
-      <!-- HIGHLIGHT GRID -->
-      <section class="features-grid" id="features">
-        <div class="feat-card">
-          <div class="feat-icon">👔</div>
-          <h3>Managers & Role Sizing</h3>
-          <p>Strict structural sequencing: Managers draft first, followed by Midfielders, Forwards, Goalkeepers, and Defenders.</p>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon">⚡</div>
-          <h3>Dynamic Bidding Slabs</h3>
-          <p>Automated bid increments (+2 under 50, +5 under 100, +10 above 100) ensuring tactical coin management.</p>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon">🛡️</div>
-          <h3>Anti-Greed Quotas</h3>
-          <p>Hard server constraints enforce a balanced 12-member squad: exactly 1 Manager, 4 Forwards, 3 Midfielders, 3 Defenders, and 1 GK.</p>
-        </div>
-      </section>
+      <p class="hero-brand-sub">ULTIMATE FOOTBALL AUCTION</p>
 
-      <!-- AUDIT COMPLIANCE CONTENT -->
-      <section class="audit-text-block">
-        <h2>About The UFA™ Platform</h2>
-        <p>
-          Football night just got serious?
-        </p>
-        <p>
-          Create a private room in seconds, share the code with the crew, and battle it out for legends, stars, and wonderkids in real time. Clock is ticking, purses are tight—who’s building a superteam and who’s going bankrupt? 
-        </p>
-        <p>
-          The hammer countdown is ticking, budgets are razor-thin, and one bad bid could ruin your entire squad. Bait your friends into blowing their budget early, steal their target man right at zero seconds, and build the ultimate squad for undisputed bragging rights.
-        </p>
-        <p>
-          With UFA, you can spin up a private auction room in five seconds flat, drop the room code into WhatsApp or Discord, and drag your mates straight into a live, cutthroat bidding war. No downloads, no sign-ups, no lag.
-          Every draft lot is processed through deterministic, server-synchronized clocks to eliminate latency bias and guarantee absolute fair play across all participating clubs.
-        </p>
-      </section>
-    </main>
+      <h1 id="main-title">Build the squad.<br><span>Win the room.</span></h1>
 
-    <!-- 1. RIGHT VERTICAL BANNER AD CONTAINER (300x600 Half-Page Skyscraper) -->
-    <aside class="ad-vertical-column">
-      <div class="ad-slot-skyscraper">
-        <span class="ad-notice">SPONSORED ADVERTISEMENT</span>
-        <!-- Paste your ad network script or tag here -->
-        <div class="ad-placeholder-vertical">
-          <span>300 × 600</span>
-          <span>Wide Skyscraper Ad Slot</span>
+      <p class="hero-copy">
+        Face your friends in a live football auction where every coin matters.
+        Read the room, time your bids, and finish with the strongest squad.
+      </p>
+
+      <div class="main-menu" aria-label="Game menu">
+        <button type="button" class="menu-button menu-button-primary" onclick="launchArena()">
+          <span class="menu-button-icon">▶</span>
+          <span class="menu-button-copy">
+            <strong>PLAY AUCTION</strong>
+            <small>Create or join a private room</small>
+          </span>
+          <span class="menu-arrow">→</span>
+        </button>
+
+        <button type="button" class="menu-button" onclick="openModal('rules-modal')">
+          <span class="menu-button-index">01</span>
+          <span class="menu-button-copy">
+            <strong>HOW TO PLAY</strong>
+            <small>Clock, bid slabs and squad limits</small>
+          </span>
+          <span class="menu-arrow">→</span>
+        </button>
+
+        <button type="button" class="menu-button" onclick="openModal('about-modal')">
+          <span class="menu-button-index">02</span>
+          <span class="menu-button-copy">
+            <strong>ABOUT UFA™</strong>
+            <small>The idea behind the auction floor</small>
+          </span>
+          <span class="menu-arrow">→</span>
+        </button>
+      </div>
+
+      <div class="game-facts" aria-label="Game facts">
+        <div class="game-fact">
+          <strong>12s</strong>
+          <span>Hammer clock</span>
+        </div>
+        <div class="game-fact">
+          <strong>4–6</strong>
+          <span>Clubs per room</span>
+        </div>
+        <div class="game-fact">
+          <strong>12</strong>
+          <span>Players per squad</span>
+        </div>
+        <div class="game-fact">
+          <strong>LIVE</strong>
+          <span>Server synced</span>
         </div>
       </div>
+    </section>
+
+    <aside class="auction-showcase" aria-label="Auction preview">
+      <div class="showcase-topline">
+        <div>
+          <span class="eyebrow">AUCTION FLOOR PREVIEW</span>
+          <strong>FORWARD DRAFT</strong>
+        </div>
+        <span class="preview-live"><i></i> LIVE</span>
+      </div>
+
+      <div class="lot-meta">
+        <span>LOT 07 / 34</span>
+        <span class="hammer-clock">HAMMER IN <strong>08</strong></span>
+      </div>
+
+      <article class="featured-card">
+        <div class="card-glow" aria-hidden="true"></div>
+
+        <div class="card-head">
+          <div class="rating-stack">
+            <strong>98</strong>
+            <span>CF</span>
+          </div>
+          <span class="rarity-badge">ICON</span>
+        </div>
+
+        <div class="player-art" aria-hidden="true">
+          <div class="player-head"></div>
+          <div class="player-body"></div>
+          <span class="shirt-number">10</span>
+        </div>
+
+        <div class="player-identity">
+          <span>🇧🇷 BRAZIL</span>
+          <h2>PELÉ</h2>
+          <p>FWD • Centre Forward</p>
+        </div>
+
+        <div class="preview-stats">
+          <div><span>PAC</span><strong>95</strong></div>
+          <div><span>SHO</span><strong>96</strong></div>
+          <div><span>PAS</span><strong>93</strong></div>
+          <div><span>DRI</span><strong>96</strong></div>
+        </div>
+      </article>
+
+      <div class="bid-preview">
+        <div class="current-price">
+          <span>CURRENT BID</span>
+          <strong>165 <small>🪙</small></strong>
+        </div>
+        <div class="leading-club">
+          <span>LEADING CLUB</span>
+          <strong>STARK FC</strong>
+        </div>
+      </div>
+
+      <div class="fake-bid-button" aria-hidden="true">
+        BID 175 🪙
+        <span>+10</span>
+      </div>
+
+      <p class="showcase-note">
+        Preview only. Enter the auction floor to create or join a live room.
+      </p>
     </aside>
-  </div>
+  </main>
 
-  <!-- 2. SLIM BOTTOM STICKY HORIZONTAL AD (728x90 Leaderboard / 320x50 Mobile) -->
-  <footer class="ad-bottom-sticky">
-    <div class="ad-slot-leaderboard">
-      <span class="ad-notice-inline">ADVERTISEMENT</span>
-      <!-- Paste your ad network script or tag here -->
-      <div class="ad-placeholder-horizontal">
-        <span>728 × 90 Leaderboard Banner</span>
+  <section class="bottom-deck" aria-label="Game information">
+    <div class="deck-card">
+      <span class="deck-step">01</span>
+      <div>
+        <strong>Create the room</strong>
+        <p>Choose clubs, budget and player pool.</p>
       </div>
     </div>
+    <div class="deck-divider"></div>
+    <div class="deck-card">
+      <span class="deck-step">02</span>
+      <div>
+        <strong>Invite your friends</strong>
+        <p>Share the private room code and password.</p>
+      </div>
+    </div>
+    <div class="deck-divider"></div>
+    <div class="deck-card">
+      <span class="deck-step">03</span>
+      <div>
+        <strong>Own the auction</strong>
+        <p>Spend smart and complete every squad role.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sponsor-strip" aria-label="Advertisement">
+    <span class="sponsor-label">ADVERTISEMENT</span>
+    <div class="ad-placeholder-horizontal">
+      <span>728 × 90 Leaderboard</span>
+    </div>
+  </section>
+
+  <footer class="game-footer">
+    <div class="footer-left">
+      <strong>UFA™</strong>
+      <span>© 2026 Ultimate Football Auction</span>
+    </div>
+    <div class="footer-links">
+      <button type="button" onclick="openModal('privacy-modal')">Privacy</button>
+      <button type="button" onclick="openModal('terms-modal')">Terms</button>
+      <button type="button" onclick="openModal('rules-modal')">Fair Play</button>
+    </div>
+    <p class="footer-disclaimer">
+      UFA™ is an independent football auction game and is not affiliated with FIFA, UEFA, FIFPRO,
+      any professional football club, or any professional football league.
+    </p>
   </footer>
 
-  <!-- BOTTOM LEGAL FOOTER -->
-  <footer class="legal-footer">
-    <div class="legal-links">
-      <a href="javascript:void(0)" onclick="openModal('privacy-modal')">Privacy Policy</a>
-      <span>•</span>
-      <a href="javascript:void(0)" onclick="openModal('terms-modal')">Terms of Service</a>
-      <span>•</span>
-      <a href="javascript:void(0)" onclick="openModal('about-modal')">About Us</a>
-      <span>•</span>
-      <a href="javascript:void(0)" onclick="openModal('rules-modal')">Rules & Fair Play</a>
-    </div>
-    <p class="copyright">© 2026 Ultimate Football Auction (UFA™). All rights reserved. This platform is not affiliated with, endorsed by, or sponsored by FIFA, UEFA, 
-    FIFPRO, or any professional football club or league.</p>
-  </footer>
-
-  <!-- ================= POLICY & RULES MODALS ================= -->
-
-  <!-- RULES MODAL -->
-  <div class="modal-backdrop" id="rules-modal">
+  <div class="modal-backdrop" id="rules-modal" role="dialog" aria-modal="true" aria-labelledby="rules-title">
     <div class="modal-card">
       <div class="modal-head">
-        <h2>UFA Auction Rules & Squad Limits</h2>
-        <button type="button" class="btn-close" onclick="closeModal('rules-modal')">✕</button>
+        <div>
+          <span class="modal-kicker">GAME GUIDE</span>
+          <h2 id="rules-title">UFA™ Auction Rules</h2>
+        </div>
+        <button type="button" class="btn-close" onclick="closeModal('rules-modal')" aria-label="Close">✕</button>
       </div>
-      <div class="modal-body">
-        <h4>1. Room Access</h4>
-        <p>Every room requires an authentic 12-character alphanumeric Room Code and an 8-character alphanumeric Password. Rooms support 4-6 Clubs as chosen by the Host.</p>
-        
-        <h4>2. Squad Caps (Hard Server Enforcement)</h4>
-        <ul>
-          <li><strong>Managers:</strong> Max 1 per club.</li>
-          <li><strong>Forwards:</strong> Max 4 per club.</li>
-          <li><strong>Midfielders:</strong> Max 3 per club.</li>
-          <li><strong>Defenders:</strong> Max 3 per club.</li>
-          <li><strong>Goalkeepers:</strong> Max 1 per club.</li>
-        </ul>
 
-        <h4>3. Sequence Flow & Clock</h4>
-        <p>Drafting progresses sequentially through Managers → Midfielders → Forwards → Goalkeepers → Defenders. Each lot has a 12-second bidding timer with a 3-second suspense interval between cards.</p>
+      <div class="modal-body">
+        <div class="rule-block">
+          <span>01</span>
+          <div>
+            <h4>Create or Join</h4>
+            <p>Hosts create a private room and choose a 4–6 club capacity, starting budget and player-pool category. Friends join with the room code and password.</p>
+          </div>
+        </div>
+
+        <div class="rule-block">
+          <span>02</span>
+          <div>
+            <h4>Build a Complete Squad</h4>
+            <p>Each club can draft 1 Manager, 4 Forwards, 3 Midfielders, 3 Defenders and 1 Goalkeeper.</p>
+          </div>
+        </div>
+
+        <div class="rule-block">
+          <span>03</span>
+          <div>
+            <h4>Beat the Hammer</h4>
+            <p>Every live lot runs on a 12-second bidding clock. A new valid bid resets the clock, while players can pass when they are done contesting the lot.</p>
+          </div>
+        </div>
+
+        <div class="rule-block">
+          <span>04</span>
+          <div>
+            <h4>Bid Slabs</h4>
+            <p>Bid increments scale with the current price: +2 below 50, +5 from 50 through 100, and +10 above 100.</p>
+          </div>
+        </div>
+
+        <div class="rule-block">
+          <span>05</span>
+          <div>
+            <h4>Draft Order</h4>
+            <p>The auction moves through Managers, Midfielders, Forwards, Goalkeepers and Defenders, with short reveal intervals between lots.</p>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="modal-play-button" onclick="launchArena()">ENTER AUCTION FLOOR →</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+    <div class="modal-card modal-card-compact">
+      <div class="modal-head">
+        <div>
+          <span class="modal-kicker">LEGAL</span>
+          <h2 id="privacy-title">Privacy Policy</h2>
+        </div>
+        <button type="button" class="btn-close" onclick="closeModal('privacy-modal')" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body prose-body">
+        <p><strong>Last updated:</strong> October 2026</p>
+
+        <h4>Information Used During a Game</h4>
+        <p>UFA™ does not require account registration. Club names, room credentials and live auction state are used to operate active multiplayer rooms.</p>
+
+        <h4>Advertising & Cookies</h4>
+        <p>Third-party advertising providers may use cookies or similar technologies according to their own policies. Browser and provider controls can be used to manage personalized advertising where available.</p>
+
+        <h4>Room Data</h4>
+        <p>Active auction state is held by the game server for the room session. Do not use sensitive personal information as a club name, room code or password.</p>
       </div>
     </div>
   </div>
 
-  <!-- PRIVACY POLICY MODAL -->
-  <div class="modal-backdrop" id="privacy-modal">
-    <div class="modal-card">
+  <div class="modal-backdrop" id="terms-modal" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+    <div class="modal-card modal-card-compact">
       <div class="modal-head">
-        <h2>Privacy Policy</h2>
-        <button type="button" class="btn-close" onclick="closeModal('privacy-modal')">✕</button>
+        <div>
+          <span class="modal-kicker">LEGAL</span>
+          <h2 id="terms-title">Terms of Service</h2>
+        </div>
+        <button type="button" class="btn-close" onclick="closeModal('terms-modal')" aria-label="Close">✕</button>
       </div>
-      <div class="modal-body">
-        <p>Last updated: September 2026</p>
-        <h4>Information We Collect</h4>
-        <p>UFA does not require personal registration or account creation. We do not harvest email addresses or personal identities. User-entered Club Names and Room Codes exist strictly in ephemeral server memory for the duration of the active auction session.</p>
-        
-        <h4>Cookies & Advertising Partners</h4>
-        <p>Third-party ad networks (such as Google AdSense and indie advertising partners) may serve automated cookies to deliver contextual advertisements based on your browsing interests. You may opt out of personalized tracking via your browser cookie preferences.</p>
-        
-        <h4>Data Retention</h4>
-        <p>Once an auction room is closed or all connected devices disconnect, room data and squad states are immediately purged from server memory.</p>
+
+      <div class="modal-body prose-body">
+        <h4>Fair Play</h4>
+        <p>Use UFA™ for recreational multiplayer auction games. Automated bidding, abusive exploitation of room mechanics and attempts to disrupt other players are not permitted.</p>
+
+        <h4>Virtual Currency</h4>
+        <p>Coins, purses and bid values inside UFA™ are fictional game values only and have no real-world monetary value.</p>
+
+        <h4>Availability</h4>
+        <p>Multiplayer sessions depend on network and server availability, so interruptions can occasionally affect an active room.</p>
       </div>
     </div>
   </div>
 
-  <!-- TERMS OF SERVICE MODAL -->
-  <div class="modal-backdrop" id="terms-modal">
+  <div class="modal-backdrop" id="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
     <div class="modal-card">
       <div class="modal-head">
-        <h2>Terms of Service</h2>
-        <button type="button" class="btn-close" onclick="closeModal('terms-modal')">✕</button>
+        <div>
+          <span class="modal-kicker">THE GAME</span>
+          <h2 id="about-title">The Idea Behind UFA™</h2>
+        </div>
+        <button type="button" class="btn-close" onclick="closeModal('about-modal')" aria-label="Close">✕</button>
       </div>
-      <div class="modal-body">
-        <h4>Acceptance of Terms</h4>
-        <p>By using the UFA platform, you agree to access the service for fair, recreational auction gaming. Exploitation of room mechanics, automated script execution, or reverse-engineering live socket events is strictly prohibited.</p>
-        
-        <h4>Virtual Currency Disclaimer</h4>
-        <p>All coins, purses, and bid valuations used within UFA are purely fictional in-game virtual tokens. They possess zero real-world monetary value and cannot be redeemed, traded, or exchanged for real currency.</p>
+
+      <div class="modal-body prose-body">
+        <p>
+          UFA™ is built around the part of football that can be just as tense as the match itself:
+          deciding who to sign, how much to spend, when to push a bid and when to walk away.
+        </p>
+
+        <p>
+          Create a private auction room, bring in your friends and build a complete squad under a shared clock.
+          Every expensive win changes what you can afford later, so the auction becomes a game of timing, budgeting and reading your opponents.
+        </p>
+
+        <div class="about-signoff">
+          <strong>UFA™</strong>
+          <span>Ultimate Football Auction</span>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- ABOUT MODAL -->
-  <div class="modal-backdrop" id="about-modal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h2>The Idea Behind UFA</h2>
-        <button type="button" class="btn-close" onclick="closeModal('about-modal')">✕</button>
-      </div>
-      <div class="modal-body">
-        <p>UFA was created with one simple idea: football transfers are interesting enough to be a game of their own. The excitement isn't only in watching a player score. It's in deciding who to sign, how much to spend, when to bid, and whether to walk away. &#x20;</p>
-
-<p>The Creator wanted to build something around that part of football — the decisions behind the team.&#x20;So he built UFA, THE Ultimate Football Auction.</p>
-
-<p>What started as a personal idea became a working auction experience where players and managers can be bought, sold, and fought over through live bidding.</p>
-
-<p>Today, thousands of active users play UFA daily with their friends and mates.<br>
-Just an idea, a lot of football, and some classic FIFA experience.</p>
-
-<p>— <strong>UFA</strong><br>
-Team, India</p>
-        
-      </div>
+      <button type="button" class="modal-play-button" onclick="launchArena()">PLAY UFA™ →</button>
     </div>
   </div>
 
@@ -281,17 +364,30 @@ Team, India</p>
     }
 
     function openModal(id) {
-      document.getElementById(id).classList.add('active');
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add('active');
+      document.body.classList.add('modal-open');
     }
 
     function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('active');
+      document.body.classList.remove('modal-open');
     }
 
-    window.addEventListener('click', (e) => {
-      if (e.target.classList.contains('modal-backdrop')) {
-        e.target.classList.remove('active');
+    window.addEventListener('click', (event) => {
+      if (event.target.classList.contains('modal-backdrop')) {
+        event.target.classList.remove('active');
+        document.body.classList.remove('modal-open');
       }
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      document.querySelectorAll('.modal-backdrop.active').forEach((modal) => modal.classList.remove('active'));
+      document.body.classList.remove('modal-open');
     });
   </script>
 </body>
