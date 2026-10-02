@@ -11,6 +11,7 @@ let currentAuthMode = 'create';
 // Tracks role transitions for 5s interstitial ad trigger
 let lastSeenPhase = null;
 let isShowingPhaseBreak = false;
+let lotResultTimer = null;
 
 const DEFAULT_BOT_DP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%2394a3b8'><circle cx='50' cy='50' r='50' fill='%23f1f5f9'/><path d='M50 46a16 16 0 1 0 0-32 16 16 0 0 0 0 32zm0 8c-18.7 0-35 11.7-35 28v2h70v-2c0-16.3-16.3-28-35-28z'/></svg>";
 
@@ -149,6 +150,51 @@ function emitPassBid(e) {
   socket.emit('pass_bid', { roomCode: currentRoom.code });
 }
 
+function showLotResult(roomSnapshot) {
+  if (!roomSnapshot) return;
+
+  const overlay = document.getElementById('lot-result-overlay');
+  const kicker = document.getElementById('lot-result-kicker');
+  const player = document.getElementById('lot-result-player');
+  const detail = document.getElementById('lot-result-detail');
+
+  if (!overlay || !kicker || !player || !detail) return;
+
+  const item = roomSnapshot.pool && roomSnapshot.pool[roomSnapshot.currentIndex];
+  if (!item) return;
+
+  const winner = roomSnapshot.highestBidder;
+  const isManager = item.primaryRole === 'manager';
+
+  if (lotResultTimer) {
+    clearTimeout(lotResultTimer);
+    lotResultTimer = null;
+  }
+
+  overlay.classList.remove('active', 'is-sold', 'is-unsold');
+
+  if (winner) {
+    kicker.textContent = isManager ? 'APPOINTED' : 'SOLD';
+    player.textContent = item.name;
+    detail.textContent = `${winner.name} • ${roomSnapshot.currentBid} Coins`;
+    overlay.classList.add('is-sold');
+  } else {
+    kicker.textContent = 'UNSOLD';
+    player.textContent = item.name;
+    detail.textContent = 'No bids placed';
+    overlay.classList.add('is-unsold');
+  }
+
+  // Force a fresh visual state even when lots conclude rapidly.
+  void overlay.offsetWidth;
+  overlay.classList.add('active');
+
+  lotResultTimer = setTimeout(() => {
+    overlay.classList.remove('active');
+    lotResultTimer = null;
+  }, 700);
+}
+
 // --- 4. SOCKET EVENT LISTENERS ---
 socket.on('room_joined', ({ room, myTeamId: id }) => {
   currentRoom = room;
@@ -177,6 +223,7 @@ socket.on('bid_placed', ({ room, log }) => {
 });
 
 socket.on('lot_concluded', ({ room, log }) => {
+  showLotResult(currentRoom);
   currentRoom = room;
   renderRoomState(room);
   logEvent(log, 'sold');
@@ -256,11 +303,15 @@ socket.on('you_were_kicked', () => {
 });
 
 socket.on('auction_finished', ({ room, log }) => {
+  showLotResult(currentRoom);
   currentRoom = room;
   renderRoomState(room);
   logEvent(log, 'sold');
-  alert("🎉 AUCTION COMPLETE! All positions filled.");
-  openAnalysisModal();
+
+  setTimeout(() => {
+    alert("🎉 AUCTION COMPLETE! All positions filled.");
+    openAnalysisModal();
+  }, 750);
 });
 
 socket.on('error_msg', (msg) => {
