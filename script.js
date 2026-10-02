@@ -2,11 +2,7 @@
 // UFA — CLIENT ENGINE (Optimized 3-2-1, Phase Ads & Fixed Stage)
 // ====================================================
 
-const UFA_BACKEND_URL = window.location.hostname.endsWith('github.io')
-  ? 'https://ufa-football.onrender.com'
-  : window.location.origin;
-
-const socket = io(UFA_BACKEND_URL, {
+const socket = io(window.location.origin, {
   reconnection: true,
   reconnectionAttempts: 10,
   timeout: 20000
@@ -221,7 +217,9 @@ socket.on('connect_error', () => {
   const liveDot = document.getElementById('live-dot');
 
   if (phaseIndicator && !currentRoom) {
-    phaseIndicator.textContent = 'CONNECTING TO AUCTION SERVER...';
+    phaseIndicator.textContent = window.location.hostname.endsWith('github.io')
+      ? 'BACKEND NOT RUNNING FOR THIS COPY'
+      : 'CONNECTING TO AUCTION SERVER...';
   }
 
   if (liveDot) {
