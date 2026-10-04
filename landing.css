@@ -81,13 +81,14 @@ h1 em, .closing-copy em { color: #8e6b31; font-weight: 400; }
   background-position: center;
   background-size: cover;
   box-shadow: 0 5px 18px rgb(15 28 32 / 8%);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 .preview-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
 .preview-heading .eyebrow { color: var(--preview-gold); font-size: 10px; letter-spacing: 2.4px; margin-bottom: 5px; }
 .preview-heading h2 { font-family: var(--serif); font-size: clamp(23px, 5.7cqw, 30px); font-weight: 700; line-height: 1.15; letter-spacing: -.5px; }
 .lot-number { padding-top: 2px; font-size: 10px; letter-spacing: 1.8px; color: var(--preview-muted); white-space: nowrap; }
 .player-preview { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr); align-items: stretch; gap: 21px; }
-.player-art { position: relative; min-width: 0; min-height: 178px; overflow: hidden; border: 1px solid #dbd8cf; border-radius: 5px; background: #f0eee6; }
+.player-art { position: relative; min-width: 0; min-height: 178px; overflow: hidden; border: 1px solid #dbd8cf; border-radius: 5px; background: #f0eee6; transition: transform 180ms ease; }
 .player-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #969890; }
 .placeholder-pitch { position: absolute; inset: 7px; width: calc(100% - 14px); height: calc(100% - 14px); color: #fffdf5; opacity: .8; }
 .placeholder-icon { position: relative; width: 39px; height: 32px; opacity: .75; }
@@ -107,7 +108,7 @@ h1 em, .closing-copy em { color: #8e6b31; font-weight: 400; }
 .player-stats dd { margin: 0; font-family: var(--serif); font-size: 25px; font-weight: 700; line-height: 1; }
 .bid-summary { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgb(223 226 222 / 38%); margin-top: 17px; padding-block: 13px 14px; }
 .detail-label { display: block; font-size: 12px; color: var(--preview-muted); margin-bottom: 4px; }
-.bid-value { font-family: var(--serif); font-size: 38px; line-height: 1; color: var(--preview-gold); }
+.bid-value { font-family: var(--serif); font-size: 38px; line-height: 1; color: var(--preview-gold); transition: color 180ms ease, text-shadow 180ms ease; }
 .bid-value small { font-family: 'DM Sans', Arial, sans-serif; font-size: 15px; font-weight: 500; }
 .clock { text-align: right; }
 .clock strong { font-family: var(--serif); font-size: 32px; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -177,6 +178,24 @@ body.modal-open { overflow: hidden; }
 .modal-play-button:hover { background: #7b5921; }
 .about-signoff { display: flex; gap: 12px; align-items: baseline; margin-top: 24px; }
 .about-signoff span { font-size: 12px; color: var(--muted); }
+
+
+@media (hover: hover) and (pointer: fine) {
+  .auction-preview:hover {
+    transform: translateY(-3px);
+    border-color: #b89a61;
+    box-shadow: 0 12px 28px rgb(15 28 32 / 13%);
+  }
+
+  .auction-preview:hover .player-art {
+    transform: translateY(-2px);
+  }
+
+  .auction-preview:hover .bid-value {
+    color: #f7d994;
+    text-shadow: 0 0 16px rgb(240 203 131 / 16%);
+  }
+}
 
 @media (min-width: 1500px) { .hero { padding-block: 78px; } }
 @media (max-width: 1100px) {
