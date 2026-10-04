@@ -248,6 +248,7 @@ function renderLobbySlots(room) {
   if (!row) return;
 
   row.replaceChildren();
+  row.dataset.capacity = room.maxTeams;
 
   for (let i = 0; i < room.maxTeams; i++) {
     const team = room.teams[i];
@@ -257,11 +258,17 @@ function renderLobbySlots(room) {
     const circle = document.createElement('div');
     circle.className = 'lobby-slot-circle';
     circle.textContent = team ? '✓' : '+';
+    if (!team) {
+      circle.innerHTML = '<span class="desktop-slot-plus">+</span><svg class="mobile-slot-people" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="7" r="3"/><path d="M6 21v-3a6 6 0 0 1 12 0v3M5 6a3 3 0 0 0 0 6m14-6a3 3 0 0 1 0 6M2 20v-3a4 4 0 0 1 3-4m17 7v-3a4 4 0 0 0-3-4"/></svg>';
+    }
 
     const label = document.createElement('span');
     label.textContent = team ? team.name : `Club ${i + 1}`;
 
-    slot.append(circle, label);
+    const status = document.createElement('small');
+    status.className = 'mobile-slot-status';
+    status.textContent = team ? 'Connected' : 'Waiting…';
+    slot.append(circle, label, status);
     row.appendChild(slot);
   }
 }
@@ -439,6 +446,12 @@ function renderRoomState(room) {
     const lobbyStartBtn = document.getElementById('lobby-start-btn');
 
     if (lobbyTitle) lobbyTitle.textContent = isHost ? 'You are Host' : 'Auction Lobby';
+    const cardTitle = document.getElementById('lobby-card-title');
+    const cardSubtitle = document.getElementById('lobby-card-subtitle');
+    if (cardTitle) cardTitle.textContent = isHost ? 'You are Host' : 'Auction Lobby';
+    if (cardSubtitle) cardSubtitle.textContent = isHost
+      ? 'Invite your friends and launch the auction when ready.'
+      : 'Waiting for the host to launch the auction.';
     if (lobbySubtitle) {
       lobbySubtitle.textContent = isHost
         ? 'Invite your friends and launch the auction when ready.'
@@ -713,6 +726,8 @@ function logEvent(msg, type) {
   item.className = `log-item ${type}`;
   item.innerHTML = msg;
   stream.prepend(item);
+  const count = document.getElementById('lobby-activity-count');
+  if (count) count.textContent = stream.children.length + (stream.children.length === 1 ? ' activity' : ' activities');
 }
 
 // --- 6. SQUAD MODAL OVERVIEW ---
@@ -743,4 +758,23 @@ function openAnalysisModal() {
 
 function closeAnalysisModal() {
   document.getElementById('ai-modal').classList.remove('active');
+}
+
+// Mobile lobby artwork: one choice per page load, never a slideshow.
+(function initMobileLounge() {
+  const mobile = window.matchMedia('(max-width: 768px)');
+  const choice = 1 + Math.floor(Math.random() * 4);
+  const apply = () => {
+    if (mobile.matches) {
+      document.body.style.setProperty('--mobile-lounge-image', 'url("./assets/mobile-lounge-' + choice + '.webp")');
+    }
+  };
+  apply();
+  mobile.addEventListener('change', apply);
+})();
+
+function toggleLobbyActivity(button) {
+  const expanded = button.getAttribute('aria-expanded') !== 'true';
+  button.setAttribute('aria-expanded', String(expanded));
+  document.querySelector('.log-panel').classList.toggle('activity-expanded', expanded);
 }

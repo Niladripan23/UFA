@@ -90,6 +90,7 @@
   <!-- TOP APP BAR -->
   <header class="app-header">
     <div class="brand">
+      <svg class="mobile-lobby-crown" viewBox="0 0 32 28" aria-hidden="true"><path d="m3 8 7 6 6-11 6 11 7-6-4 16H7Z" fill="currentColor"/><path d="M8 27h16" stroke="currentColor" stroke-width="2"/></svg>
       <div class="logo-badge">UFA™</div>
       <span class="brand-title">Ultimate Football Auction</span>
     </div>
@@ -139,9 +140,10 @@
         </div>
 
         <!-- Reserved leaderboard ad inventory -->
-        <div class="lobby-top-ad" aria-label="Advertisement space">
+        <div class="lobby-top-ad" id="mobile-lobby-ad" data-ad-placement="auction-lobby" data-mobile-size="320x100" aria-label="Advertisement space">
           <span>ADVERTISEMENT</span>
-          <strong>728 × 90</strong>
+          <strong class="desktop-ad-size">728 × 90</strong>
+          <strong class="mobile-ad-size">320 × 100</strong>
         </div>
 
         <!-- Future stadium artwork holder. Add background-image later without changing markup. -->
@@ -149,11 +151,12 @@
           <div class="lobby-hero-media" aria-hidden="true"></div>
 
           <div class="lobby-hero-content">
+            <div class="lobby-summary-card">
             <div class="pill-tag-mini">LOBBY LOUNGE</div>
 
             <div class="lobby-welcome-banner">
-              <h2 id="lobby-wait-title">You are Host</h2>
-              <p id="lobby-wait-subtitle">Invite your friends and launch the auction when ready.</p>
+              <h2 id="lobby-card-title">You are Host</h2>
+              <p id="lobby-card-subtitle">Invite your friends and launch the auction when ready.</p>
             </div>
 
             <div class="lobby-room-code-card">
@@ -179,7 +182,10 @@
               </div>
             </div>
 
+            </div>
+
             <div class="lobby-progress-card">
+              <span class="mobile-lobby-label">Club connections</span>
               <strong id="lobby-progress-text">1 / 4 clubs connected</strong>
               <div class="lobby-slot-row" id="lobby-slot-row"></div>
 
@@ -288,6 +294,7 @@
       <div class="panel-header">
         <h3 id="activity-panel-title">Live Auction Stream</h3>
         <span class="badge-live">ONLINE</span>
+        <button type="button" class="mobile-activity-toggle" aria-expanded="false" aria-controls="log-stream" onclick="toggleLobbyActivity(this)"><span id="lobby-activity-count">0 activities</span><span aria-hidden="true">⌄</span></button>
       </div>
       <div class="log-stream" id="log-stream"></div>
 

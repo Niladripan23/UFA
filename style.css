@@ -2074,3 +2074,124 @@ body.lobby-mode .log-stream {
     font-size: 0.72rem;
   }
 }
+
+/* Mobile lobby only. Desktop and the live auction retain their existing layout. */
+.mobile-lobby-crown,
+.mobile-lobby-label,
+.mobile-slot-status,
+.mobile-slot-people,
+.mobile-ad-size,
+.mobile-activity-toggle { display: none; }
+.lobby-summary-card { display: contents; }
+
+@media (max-width: 768px) {
+  body.lobby-mode {
+    background-color: #0c1824;
+    background-image: linear-gradient(rgb(5 14 24 / 30%), rgb(5 14 24 / 50%)), var(--mobile-lounge-image, none);
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+  body.lobby-mode .app-header {
+    position: relative;
+    height: auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px 8px;
+    padding: max(12px, env(safe-area-inset-top)) 14px 0;
+    background: rgb(8 19 32 / 55%);
+    border: 0;
+  }
+  body.lobby-mode .brand { gap: 5px; min-width: 0; }
+  body.lobby-mode .brand-title { display: none; }
+  body.lobby-mode .mobile-lobby-crown { display: block; width: 22px; height: 25px; flex-shrink: 0; color: #e9b94f; }
+  body.lobby-mode .brand .logo-badge { padding: 0; border-radius: 0; background: none; color: white; font-size: 24px; letter-spacing: -1.5px; }
+  body.lobby-mode .admin-controls { grid-column: 2; grid-row: 1; gap: 6px; justify-content: flex-end; width: auto; min-width: 0; }
+  body.lobby-mode .btn-ai-open,
+  body.lobby-mode #host-start-btn { min-height: 42px; max-width: none; padding: 8px 9px; font-size: 10px; white-space: nowrap; border-radius: 8px; overflow: visible; text-overflow: clip; }
+  body.lobby-mode #host-start-btn { background: #edc164; color: #201706; border: 1px solid #ecc876; }
+  body.lobby-mode .room-status { grid-column: 1 / -1; grid-row: 2; justify-content: center; width: 100%; min-height: 32px; padding: 6px 8px; border-radius: 12px; border: 1px solid #3b4a5d; background: rgb(26 41 59 / 92%); font-size: 10px; line-height: 1.4; }
+  body.lobby-mode .live-indicator { width: 9px; height: 9px; flex-shrink: 0; box-shadow: none; }
+  body.lobby-mode .auction-grid { display: flex; flex-direction: column; flex: none; gap: 10px; width: 100%; max-width: 600px; padding: 10px 14px max(16px, env(safe-area-inset-bottom)); }
+  body.lobby-mode .center-stage { order: 1; width: 100%; min-width: 0; }
+  body.lobby-mode .log-panel { order: 2; }
+  /* Detailed squad/budget controls, including host Kick buttons, remain available. */
+  body.lobby-mode .team-panel { order: 3; }
+  body.lobby-mode .lobby-stage-view { height: auto; gap: 10px; }
+  body.lobby-mode .lobby-stage-view > .lobby-welcome-banner { display: none; }
+  body.lobby-mode .lobby-hero-shell { order: 1; min-height: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+  body.lobby-mode .lobby-hero-media { display: none; }
+  body.lobby-mode .lobby-hero-content { width: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; color: #101d31; }
+  body.lobby-mode .lobby-summary-card,
+  body.lobby-mode .lobby-progress-card { display: block; background: #fff; border: 1px solid #e0e6ed; border-radius: 13px; padding: 14px; box-shadow: 0 3px 12px rgb(0 0 0 / 8%); backdrop-filter: none; }
+  body.lobby-mode .pill-tag-mini { margin: 0 0 9px; padding: 4px 9px; border-radius: 7px; background: #f6d68b; font-size: 9px; line-height: 1.3; letter-spacing: .5px; }
+  body.lobby-mode .lobby-welcome-banner { text-align: left; }
+  body.lobby-mode .lobby-welcome-banner h2 { margin-bottom: 6px; font-size: 29px; line-height: 1.08; letter-spacing: -1px; }
+  body.lobby-mode .lobby-welcome-banner p { color: #738199; font-size: 12px; line-height: 1.45; }
+  body.lobby-mode .lobby-room-code-card { position: relative; padding: 10px 11px; margin-top: 12px; border: 0; border-radius: 10px; background: #f0f4f8; text-align: left; backdrop-filter: none; }
+  body.lobby-mode .lobby-room-code-card > span { color: #718098; font-size: 9px; letter-spacing: .7px; }
+  body.lobby-mode .lobby-room-code-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; margin-top: 3px; gap: 7px; flex-wrap: nowrap; }
+  body.lobby-mode .lobby-room-code-row > strong { min-width: 0; font-size: clamp(16px, 5vw, 23px); letter-spacing: -.6px; overflow-wrap: anywhere; }
+  body.lobby-mode .btn-copy-code { min-height: 40px; margin-top: -12px; padding: 8px 10px; color: #14213a; background: #fafbfd; border: 1px solid #d9e1eb; border-radius: 8px; font-size: 11px; }
+  body.lobby-mode .lobby-config-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 9px; padding: 8px 0 0; border: 0; background: none; backdrop-filter: none; }
+  body.lobby-mode .lobby-config-item { padding: 0 5px; }
+  body.lobby-mode .lobby-config-item + .lobby-config-item { border-top: 0; border-left: 1px solid #e0e6ee; }
+  body.lobby-mode .lobby-config-item span { color: #708098; font-size: 8px; font-weight: 700; text-transform: uppercase; line-height: 1.3; }
+  body.lobby-mode .lobby-config-item strong { font-size: 19px; line-height: 1.35; margin-top: 3px; color: #14213a; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+  body.lobby-mode #lobby-category { font-size: 14px; padding-top: 3px; }
+  body.lobby-mode .lobby-progress-card { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; text-align: left; gap: 0 8px; }
+  body.lobby-mode .mobile-lobby-label { display: block; color: #52647d; font-size: 9px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; }
+  body.lobby-mode #lobby-progress-text { color: #6b7c94; font-size: 8px; text-transform: uppercase; align-self: center; }
+  body.lobby-mode .lobby-slot-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; gap: 6px; margin: 10px 0; }
+  body.lobby-mode .lobby-slot-row[data-capacity="5"],
+  body.lobby-mode .lobby-slot-row[data-capacity="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.lobby-mode .lobby-club-slot { width: auto; min-width: 0; min-height: 72px; padding: 7px 3px; gap: 3px; align-content: center; background: #f8fafc; border: 1px dashed #d3dce7; border-radius: 9px; color: #16243b; }
+  body.lobby-mode .lobby-club-slot > span { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: 10px; }
+  body.lobby-mode .lobby-club-slot.is-filled { background: #eefaf4; border-style: solid; border-color: #bee9d6; }
+  body.lobby-mode .lobby-slot-circle { width: 24px; height: 24px; border: none; border-radius: 50%; background: none; box-shadow: none; color: #8593a8; font-size: 18px; }
+  body.lobby-mode .desktop-slot-plus { display: none; }
+  body.lobby-mode .mobile-slot-people { display: block; width: 22px; height: 22px; }
+  body.lobby-mode .lobby-club-slot.is-filled .lobby-slot-circle { background: #22af65; color: white; font-size: 16px; }
+  body.lobby-mode .mobile-slot-status { display: block; color: #7b8ba1; font-size: 8px; font-weight: 500; }
+  body.lobby-mode .is-filled .mobile-slot-status { background: #d2f1df; color: #178445; border-radius: 8px; padding: 1px 4px; font-size: 7px; font-weight: 800; text-transform: uppercase; }
+  body.lobby-mode .lobby-start-btn { grid-column: 1 / -1; width: 100%; min-height: 43px; margin: 0; border: 1px solid #dfae43; border-radius: 8px; background: #edc164; box-shadow: none; font-size: 16px; color: #211704; }
+  body.lobby-mode .lobby-wait-note { grid-column: 1 / -1; margin-top: 7px; text-align: center; color: #78879c; font-size: 10px; }
+  body.lobby-mode .lobby-top-ad { order: 2; position: relative; width: min(320px, 100%); height: 100px; min-height: 100px; flex-shrink: 0; margin: 0 auto; border: 1px dashed #a3b0be; border-radius: 9px; background: rgb(12 24 40 / 76%); color: #c7d0dc; }
+  body.lobby-mode .lobby-top-ad span { font-size: 10px; letter-spacing: .5px; }
+  body.lobby-mode .lobby-top-ad strong { color: #c7d0dc; font-size: 12px; }
+  body.lobby-mode .desktop-ad-size { display: none; }
+  body.lobby-mode .mobile-ad-size { display: block; }
+  body.lobby-mode .lobby-top-ad > iframe,
+  body.lobby-mode .lobby-top-ad > ins { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  body.lobby-mode .lobby-top-ad:has(iframe, ins) > span,
+  body.lobby-mode .lobby-top-ad:has(iframe, ins) > strong { visibility: hidden; }
+  body.lobby-mode .side-ad-slot { display: none; }
+  body.lobby-mode .log-panel { border-radius: 12px; background: #fff; }
+  body.lobby-mode .log-panel .panel-header { padding: 8px 12px; border-bottom: 0; min-height: 42px; }
+  body.lobby-mode .log-panel .panel-header h3 { color: #52647d; font-size: 11px; text-transform: uppercase; }
+  body.lobby-mode .log-panel .badge-live { display: none; }
+  body.lobby-mode .mobile-activity-toggle { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 4px 0 4px 8px; font: inherit; font-size: 10px; color: #70829a; border: 0; background: none; cursor: pointer; }
+  body.lobby-mode .log-stream { flex: none; padding: 0 10px 10px; max-height: 230px; overflow-y: auto; }
+  body.lobby-mode .log-item { margin: 0 0 5px; padding: 8px 10px; border-radius: 8px; background: #f5f7fb; font-size: 10px; overflow-wrap: anywhere; }
+  body.lobby-mode .log-panel:not(.activity-expanded) .log-item:not(:first-child) { display: none; }
+  body.lobby-mode .team-panel .teams-container { max-height: 300px; overflow-y: auto; }
+  body.lobby-mode button:focus-visible { outline: 3px solid #48a5e9; outline-offset: 3px; }
+}
+
+@media (max-width: 430px) {
+  body.lobby-mode .app-header { padding-inline: 10px; }
+  body.lobby-mode .auction-grid { padding-inline: 10px; }
+  body.lobby-mode .lobby-summary-card,
+  body.lobby-mode .lobby-progress-card { padding: 12px; }
+}
+@media (max-width: 359px) {
+  body.lobby-mode .brand .logo-badge { font-size: 20px; }
+  body.lobby-mode .mobile-lobby-crown { width: 17px; }
+  body.lobby-mode .btn-ai-open,
+  body.lobby-mode #host-start-btn { padding-inline: 6px; font-size: 9px; }
+  body.lobby-mode .room-status { font-size: 9px; }
+  body.lobby-mode .lobby-welcome-banner h2 { font-size: 27px; }
+  body.lobby-mode .lobby-room-code-row > strong { font-size: 17px; }
+  body.lobby-mode #lobby-progress-text { font-size: 7px; }
+}
