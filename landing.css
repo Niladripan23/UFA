@@ -28,7 +28,17 @@ svg { display: block; max-width: 100%; }
 .site-header { background: #fff; border-bottom: 1px solid var(--line); }
 .header-inner { min-height: 92px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand-lockup { display: flex; align-items: center; gap: 12px; }
-.brand-crown { width: 29px; height: 28px; color: var(--gold); }
+.brand-crown {
+  width: 29px;
+  height: 28px;
+  color: var(--gold);
+  transition: transform 160ms ease;
+}
+
+.brand-lockup:hover .brand-crown,
+.brand-lockup:focus-visible .brand-crown {
+  transform: translateY(-2px);
+}
 .brand-mark { font-size: 38px; font-weight: 700; letter-spacing: -2px; line-height: 1; }
 sup { font-family: 'DM Sans', Arial, sans-serif; font-size: 11px; letter-spacing: 0; vertical-align: top; line-height: 1.6; }
 .brand-name { margin-left: 9px; padding-left: 20px; border-left: 1px solid var(--line); color: var(--muted); font-size: 10px; line-height: 1.55; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; }
