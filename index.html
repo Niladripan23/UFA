@@ -46,16 +46,25 @@
           <span class="lot-number">LOT 07 / 34</span>
         </div>
         <div class="player-preview">
-          <div class="player-art" role="img" aria-label="Illustration of a classic Brazil number 10 football shirt">
-            <span class="shirt-caption">BRAZIL · NO. 10</span>
-            <svg viewBox="0 0 200 230" aria-hidden="true">
-              <path d="m64 30-31 15-24 49 31 17 15-25-5 120h100l-5-120 15 25 31-17-24-49-31-15Z" fill="#e6c453"/>
-              <path d="m64 30 20-8h32l20 8c-4 20-17 30-36 30S68 50 64 30" fill="#2f6653"/>
-              <path d="m79 26 7-4h28l7 4c-3 13-10 19-21 19S82 39 79 26" fill="#ece9dd"/>
-              <path d="m9 94 31 17 5-9L14 84Zm151 17 31-17-5-10-31 18Z" fill="#2f6653"/>
-              <path d="m55 86-5 120h12l2-140Zm90 0 5 120h-12l-2-140Z" fill="#d1af3e"/>
-              <text x="100" y="156" text-anchor="middle" fill="#244d40" font-family="Georgia,serif" font-weight="bold" font-size="73">10</text>
-            </svg>
+          <!-- Upload assets/preview-player-card.png to replace this blank holder.
+               The fallback stays visible while the image loads or if it fails. -->
+          <div class="player-art" role="img" aria-label="Player image holder for Pelé">
+            <div class="player-placeholder" aria-hidden="true">
+              <svg class="placeholder-pitch" viewBox="0 0 300 220" preserveAspectRatio="none">
+                <g fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M16 16h268v188H16zM150 16v188M16 58h42v104H16m268-104h-42v104h42M16 84h15v52H16m268-52h-15v52h15"/>
+                  <circle cx="150" cy="110" r="54"/>
+                  <path d="M16 30a14 14 0 0 0 14-14m240 0a14 14 0 0 0 14 14M16 190a14 14 0 0 1 14 14m240 0a14 14 0 0 1 14-14"/>
+                </g>
+              </svg>
+              <svg class="placeholder-icon" viewBox="0 0 64 52" fill="none">
+                <rect x="3" y="3" width="58" height="46" rx="2" stroke="currentColor" stroke-width="3"/>
+                <circle cx="44" cy="17" r="6" fill="currentColor"/>
+                <path d="m8 42 16-18 12 12 7-8 14 14Z" fill="currentColor"/>
+              </svg>
+              <span>Image holder</span>
+            </div>
+            <img class="preview-player-image" src="./assets/preview-player-card.png" alt="" hidden decoding="async" onload="this.hidden = false" onerror="this.hidden = true">
           </div>
           <div class="player-details">
             <p class="player-country">Brazil <span aria-hidden="true">/</span> Centre Forward</p>
@@ -70,7 +79,7 @@
           <div><span class="detail-label">Current bid</span><strong class="bid-value">165 <small>coins</small></strong></div>
           <div class="clock"><span class="detail-label">Hammer in</span><strong>00:08</strong></div>
         </div>
-        <div class="leading-club"><span>Leading club</span><strong>Stark FC</strong><span class="club-mark" aria-hidden="true">S</span></div>
+        <div class="leading-club"><span>Leading club</span><strong>Stark FC</strong><span class="club-mark" aria-hidden="true"><span class="club-mark-fallback">S</span><img src="./assets/preview-club-badge.png" alt="" hidden decoding="async" onload="this.hidden = false" onerror="this.hidden = true"></span></div>
         <p id="preview-note" class="preview-note">A taste of the auction. Your rivalry starts in a private room.</p>
       </aside>
     </section>

@@ -52,37 +52,64 @@ h1 em, .closing-copy em { color: #8e6b31; font-weight: 400; }
 .button-secondary:hover { background: #eeeee7; }
 .hero-note { font-size: 11px; color: var(--muted); margin-top: 18px; }
 
-/* This is an illustrative auction lot, not a connection to a live room. */
-.auction-preview { background: var(--ink); color: #fff; padding: 25px 27px 18px; border-radius: 8px; min-width: 0; }
-.preview-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
-.preview-heading .eyebrow { color: #b3c2bf; font-size: 9px; letter-spacing: 1.7px; margin-bottom: 5px; }
-.preview-heading h2 { font-size: 20px; font-weight: 500; letter-spacing: -.4px; }
-.lot-number { font-size: 9px; letter-spacing: 1.3px; color: #b3c2bf; white-space: nowrap; }
-.player-preview { display: grid; grid-template-columns: .95fr 1fr; align-items: stretch; gap: 24px; }
-.player-art { background: #eae9df; border-radius: 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 8px 0; min-width: 0; }
-.shirt-caption { color: #5e665d; font-size: 8px; letter-spacing: 1.8px; font-weight: 600; }
-.player-art svg { width: 175px; height: 192px; }
-.player-details { padding-top: 8px; min-width: 0; display: flex; flex-direction: column; }
-.player-country { font-size: 10px; color: #b3c2bf; line-height: 1.5; }
-.player-country span { padding-inline: 4px; color: #c9ad71; }
-.player-details h3 { font-family: var(--serif); font-size: 47px; font-weight: 400; line-height: 1.2; margin: 6px 0 10px; }
-.player-rating { display: flex; gap: 10px; align-items: center; }
-.player-rating > strong { font-size: 27px; font-weight: 500; color: #e5c582; }
-.player-rating > span { font-size: 9px; line-height: 1.4; color: #b3c2bf; }
-.player-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: auto 0 0; padding-top: 18px; }
-.player-stats dt { font-size: 8px; color: #b3c2bf; margin-bottom: 5px; letter-spacing: .7px; }
-.player-stats dd { margin: 0; font-size: 17px; font-weight: 500; }
-.bid-summary { display: flex; align-items: center; justify-content: space-between; padding-block: 20px 17px; margin-top: 20px; border-top: 1px solid #405056; }
-.detail-label { display: block; font-size: 10px; color: #b3c2bf; margin-bottom: 6px; }
-.bid-value { color: #e5c582; font-size: 30px; font-weight: 500; line-height: 1; }
-.bid-value small { font-size: 12px; font-weight: 400; }
+/* Homepage preview only. Replace this JPEG to change the stadium scene.
+   The final gradient also renders when the stadium image is unavailable. */
+.auction-preview {
+  --preview-gold: #f0cb83;
+  --preview-muted: #d4dbde;
+  container-type: inline-size;
+  min-width: 0;
+  padding: 23px 24px 18px;
+  color: #fafafa;
+  border: 1px solid #a19d8e;
+  border-radius: 11px;
+  background-color: #101f2a;
+  background-image:
+    linear-gradient(180deg, rgb(8 20 31 / 35%), rgb(7 18 25 / 52%) 55%, rgb(3 14 17 / 76%)),
+    url('./assets/preview-stadium-bg.jpg'),
+    linear-gradient(155deg, #253d4c, #12232e 55%, #172e27);
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 5px 18px rgb(15 28 32 / 8%);
+}
+.preview-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+.preview-heading .eyebrow { color: var(--preview-gold); font-size: 10px; letter-spacing: 2.4px; margin-bottom: 5px; }
+.preview-heading h2 { font-family: var(--serif); font-size: clamp(23px, 5.7cqw, 30px); font-weight: 700; line-height: 1.15; letter-spacing: -.5px; }
+.lot-number { padding-top: 2px; font-size: 10px; letter-spacing: 1.8px; color: var(--preview-muted); white-space: nowrap; }
+.player-preview { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr); align-items: stretch; gap: 21px; }
+.player-art { position: relative; min-width: 0; min-height: 178px; overflow: hidden; border: 1px solid #dbd8cf; border-radius: 5px; background: #f0eee6; }
+.player-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #969890; }
+.placeholder-pitch { position: absolute; inset: 7px; width: calc(100% - 14px); height: calc(100% - 14px); color: #fffdf5; opacity: .8; }
+.placeholder-icon { position: relative; width: 39px; height: 32px; opacity: .75; }
+.player-placeholder > span { position: relative; font-size: 8px; text-transform: uppercase; letter-spacing: 2px; }
+.preview-player-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.player-art:has(.preview-player-image:not([hidden])) .player-placeholder { visibility: hidden; }
+.player-details { min-width: 0; display: flex; flex-direction: column; padding-block: 3px; }
+.player-country { font-size: 11px; line-height: 1.5; color: var(--preview-muted); }
+.player-country span { padding-inline: 5px; color: var(--preview-gold); }
+.player-details h3 { font-family: var(--serif); font-size: clamp(42px, 11cqw, 60px); font-weight: 700; line-height: 1.05; letter-spacing: -1px; margin: 8px 0 10px; }
+.player-rating { display: flex; align-items: center; gap: 12px; }
+.player-rating > strong { font-family: var(--serif); font-size: clamp(34px, 8.5cqw, 47px); line-height: 1; color: var(--preview-gold); }
+.player-rating > span { padding-left: 12px; border-left: 1px solid rgb(240 203 131 / 45%); font-size: 11px; line-height: 1.4; color: var(--preview-muted); }
+.player-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: auto 0 0; padding-top: 20px; }
+.player-stats > div + div { border-left: 1px solid rgb(221 228 229 / 28%); padding-left: 10px; }
+.player-stats dt { font-size: 9px; letter-spacing: .6px; color: var(--preview-muted); margin-bottom: 4px; }
+.player-stats dd { margin: 0; font-family: var(--serif); font-size: 25px; font-weight: 700; line-height: 1; }
+.bid-summary { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgb(223 226 222 / 38%); margin-top: 17px; padding-block: 13px 14px; }
+.detail-label { display: block; font-size: 12px; color: var(--preview-muted); margin-bottom: 4px; }
+.bid-value { font-family: var(--serif); font-size: 38px; line-height: 1; color: var(--preview-gold); }
+.bid-value small { font-family: 'DM Sans', Arial, sans-serif; font-size: 15px; font-weight: 500; }
 .clock { text-align: right; }
-.clock strong { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; }
-.leading-club { display: flex; align-items: center; gap: 10px; border-top: 1px solid #405056; padding-top: 14px; font-size: 11px; }
-.leading-club > span:first-child { color: #b3c2bf; }
-.leading-club strong { margin-left: auto; font-size: 12px; font-weight: 500; }
-.club-mark { width: 25px; height: 28px; border: 1px solid #a4b4b0; border-radius: 2px 2px 9px 9px; display: grid; place-items: center; font-family: var(--serif); font-size: 15px; }
-.preview-note { color: #b3c2bf; font-size: 9px; line-height: 1.6; margin-top: 16px; }
+.clock strong { font-family: var(--serif); font-size: 32px; line-height: 1; font-variant-numeric: tabular-nums; }
+.leading-club { display: flex; align-items: center; gap: 12px; border-top: 1px solid rgb(223 226 222 / 38%); padding-top: 13px; }
+.leading-club > span:first-child { font-size: 12px; color: var(--preview-muted); }
+.leading-club strong { margin-left: auto; font-family: var(--serif); font-size: 18px; }
+.club-mark { position: relative; flex: 0 0 27px; width: 27px; height: 32px; display: grid; place-items: center; border: 1px solid var(--preview-gold); border-radius: 2px 2px 12px 12px; font-family: var(--serif); font-size: 21px; }
+.club-mark img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.auction-preview img[hidden] { display: none; }
+.club-mark:has(img:not([hidden])) { border-color: transparent; }
+.club-mark:has(img:not([hidden])) .club-mark-fallback { visibility: hidden; }
+.preview-note { color: var(--preview-muted); font-size: 10px; line-height: 1.6; font-style: italic; letter-spacing: .3px; margin-top: 15px; }
 
 .how-section { background: #fff; border-block: 1px solid var(--line); padding-block: 31px 37px; scroll-margin-top: 24px; }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
@@ -147,9 +174,6 @@ body.modal-open { overflow: hidden; }
   .hero { gap: 32px; }
   h1 { font-size: 51px; letter-spacing: -2px; }
   .hero-content > .eyebrow { font-size: 9px; letter-spacing: 1.5px; }
-  .auction-preview { padding-inline: 22px; }
-  .player-preview { gap: 18px; }
-  .player-art svg { height: 175px; }
   .button { padding-inline: 17px; gap: 16px; }
 }
 @media (max-width: 850px) {
@@ -157,10 +181,6 @@ body.modal-open { overflow: hidden; }
   .hero { grid-template-columns: minmax(0, 1fr); max-width: 580px; padding-block: 44px; gap: 34px; }
   h1 { font-size: 62px; }
   .hero-copy { max-width: 450px; }
-  .auction-preview { padding: 24px; }
-  .player-preview { grid-template-columns: 180px minmax(0, 1fr); gap: 28px; }
-  .player-art svg { height: 180px; }
-  .player-stats { max-width: 200px; }
   .section-heading { display: block; }
   .section-heading > span { display: block; margin-top: 8px; }
   .steps li { gap: 12px; padding-right: 20px; }
@@ -186,28 +206,6 @@ body.modal-open { overflow: hidden; }
   .hero-actions { margin-top: 24px; gap: 10px; }
   .button { min-height: 50px; padding: 12px 17px; font-size: 12px; gap: 19px; }
   .hero-note { font-size: 10px; margin-top: 15px; }
-  .auction-preview { padding: 20px 18px 16px; border-radius: 5px; }
-  .preview-heading { margin-bottom: 19px; }
-  .preview-heading h2 { font-size: 19px; }
-  .preview-heading .eyebrow { font-size: 8px; }
-  .lot-number { font-size: 8px; letter-spacing: 1px; }
-  .player-preview { grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); gap: 18px; }
-  .player-art { padding: 12px 4px 0; }
-  .shirt-caption { font-size: 7px; letter-spacing: 1px; }
-  .player-art svg { height: 155px; }
-  .player-details { padding-top: 3px; }
-  .player-country { font-size: 9px; }
-  .player-country span { padding-inline: 2px; }
-  .player-details h3 { font-size: 39px; margin-block: 6px; }
-  .player-rating > strong { font-size: 25px; }
-  .player-rating > span { font-size: 8px; }
-  .player-stats { gap: 7px; padding-top: 15px; }
-  .player-stats dt { font-size: 7px; }
-  .player-stats dd { font-size: 15px; }
-  .bid-summary { margin-top: 18px; padding-block: 16px; }
-  .bid-value { font-size: 28px; }
-  .clock strong { font-size: 22px; }
-  .preview-note { font-size: 8px; }
   .how-section { padding-block: 29px 31px; }
   .section-heading h2 { font-size: 24px; }
   .steps { grid-template-columns: minmax(0, 1fr); gap: 22px; margin-top: 28px; }
@@ -233,3 +231,31 @@ body.modal-open { overflow: hidden; }
   .button { gap: 12px; padding-inline: 16px; }
 }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+/* Keep the two-column reference layout legible in narrow homepage columns. */
+@container (max-width: 380px) {
+  .preview-heading .eyebrow { font-size: 9px; letter-spacing: 1.7px; }
+  .lot-number { font-size: 9px; letter-spacing: 1px; }
+  .player-preview { gap: 14px; }
+  .player-art { min-height: 172px; }
+  .player-country { font-size: 10px; }
+  .player-country span { padding-inline: 2px; }
+  .player-rating { gap: 8px; }
+  .player-rating > span { padding-left: 8px; font-size: 10px; }
+  .player-stats { padding-top: 15px; }
+  .player-stats > div + div { padding-left: 6px; }
+  .player-stats dt { font-size: 8px; }
+  .player-stats dd { font-size: 21px; }
+  .player-placeholder > span { font-size: 7px; letter-spacing: 1.3px; }
+  .preview-note { font-size: 9px; }
+}
+@media (max-width: 600px) {
+  .auction-preview { padding: 20px 17px 16px; border-radius: 9px; }
+}
+@container (max-width: 275px) {
+  .player-preview { gap: 11px; }
+  .player-rating > span { font-size: 9px; }
+  .player-stats > div + div { padding-left: 4px; }
+  .player-stats dd { font-size: 19px; }
+  .player-placeholder > span { letter-spacing: .8px; }
+}
