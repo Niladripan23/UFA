@@ -2,7 +2,11 @@
 // UFA — CLIENT ENGINE (Optimized 3-2-1, Phase Ads & Fixed Stage)
 // ====================================================
 
-const socket = io(window.location.origin, {
+const AUCTION_SERVER_URL = window.location.hostname.endsWith('github.io')
+  ? 'https://ufa-test-v2.onrender.com'
+  : window.location.origin;
+
+const socket = io(AUCTION_SERVER_URL, {
   reconnection: true,
   reconnectionAttempts: 10,
   timeout: 20000
