@@ -283,6 +283,21 @@
         modalTrigger?.focus();
       });
     });
+
+    // Small one-time reveal for the three "How it works" steps.
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('step-reveal-ready');
+
+      const stepObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.18 });
+
+      document.querySelectorAll('.steps li').forEach((step) => stepObserver.observe(step));
+    }
   </script>
 </body>
 </html>
