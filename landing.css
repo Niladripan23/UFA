@@ -134,6 +134,27 @@ h1 em, .closing-copy em { color: #8e6b31; font-weight: 400; }
 .steps h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
 .steps p { font-size: 12px; line-height: 1.7; color: var(--muted); max-width: 245px; }
 
+@media (prefers-reduced-motion: no-preference) {
+  .step-reveal-ready .steps li {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 420ms ease, transform 420ms ease;
+  }
+
+  .step-reveal-ready .steps li:nth-child(2) {
+    transition-delay: 70ms;
+  }
+
+  .step-reveal-ready .steps li:nth-child(3) {
+    transition-delay: 140ms;
+  }
+
+  .step-reveal-ready .steps li.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Ad containers reserve actual creative dimensions without scaling or clipping ads. */
 .ad-section { padding-block: 27px 32px; }
 .ad-placement { display: flex; flex-direction: column; align-items: center; gap: 9px; min-width: 0; }
