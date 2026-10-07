@@ -4,12 +4,12 @@ const http = require('node:http');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { Server } = require('socket.io');
-const { RoomStore } = require('./roomStore');
+const { RoomStore, MemoryRoomStore } = require('./roomStore');
 const { loadConfig } = require('./config');
 const { loadGameData } = require('./gameData');
 const game = require('./auctionEngine');
 
-async function createApplication({ config = loadConfig(), data = loadGameData(), store = new RoomStore(config.redisUrl) } = {}) {
+async function createApplication({ config = loadConfig(), data = loadGameData(undefined, { allowMissing: true }), store = (config.redisUrl ? new RoomStore(config.redisUrl) : new MemoryRoomStore()) } = {}) {
   await store.connect();
   const instanceId = crypto.randomUUID();
   const app = express();
@@ -219,7 +219,10 @@ async function createApplication({ config = loadConfig(), data = loadGameData(),
           effect = event === 'raise_bid' ? game.bid(room, team, now) : game.pass(room, team, now);
         } else {
           host(room, team);
-          if (event === 'start_auction') game.startAuction(room, data, now);
+          if (event === 'start_auction') {
+            if (!data.players.length || !data.managers.length) game.fail('DATA_UNAVAILABLE', 'Auction player data is not installed yet. Create/Join works, but the auction cannot start until the real datasets are restored.');
+            game.startAuction(room, data, now);
+          }
           if (event === 'host_toggle_pause') game.setPaused(room, input.isPaused, now);
           if (event === 'host_close_room') {
             await store.deleteRoom(room);
@@ -322,11 +325,11 @@ async function createApplication({ config = loadConfig(), data = loadGameData(),
 }
 
 async function main() {
-  const data = loadGameData();
+  const data = loadGameData(undefined, { allowMissing: true });
   const config = loadConfig();
   const application = await createApplication({ config, data });
   application.server.listen(config.port, '0.0.0.0', () => {
-    console.log(`UFA listening on ${config.port}; Redis ready; room TTL ${config.ttlSeconds}s; commit ${config.commit}`);
+    console.log(`UFA listening on ${config.port}; room store ${config.redisUrl ? 'Redis' : 'memory fallback'}; room TTL ${config.ttlSeconds}s; commit ${config.commit}`);
     console.log(`Allowed origins: ${config.allowedOrigins.join(', ')}`);
   });
   for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => {
