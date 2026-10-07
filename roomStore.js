@@ -1,5 +1,6 @@
 'use strict';
 const { createClient } = require('redis');
+const { EventEmitter } = require('node:events');
 
 // Compare-and-set protects against stale writes, including overlapping Render deploys.
 const WRITE = `
@@ -62,4 +63,55 @@ class RoomStore {
   close() { if (this.client.isOpen) this.client.destroy(); }
 }
 
-module.exports = { RoomStore };
+class MemoryRoomStore {
+  constructor(prefix = 'ufa:v1:room:') {
+    this.prefix = prefix;
+    this.rooms = new Map();
+    this.client = new EventEmitter();
+  }
+  async connect() {}
+  isReady() { return true; }
+  async ping() { return 'PONG'; }
+  cleanup(code) {
+    const room = this.rooms.get(code);
+    if (room && room.expiresAt <= Date.now()) {
+      this.rooms.delete(code);
+      return null;
+    }
+    return room || null;
+  }
+  async getRoom(code) {
+    const room = this.cleanup(code);
+    return room ? structuredClone(room) : null;
+  }
+  async createRoom(room) {
+    if (this.cleanup(room.code)) return false;
+    room.version = 1;
+    this.rooms.set(room.code, structuredClone(room));
+    return true;
+  }
+  async saveRoom(room) {
+    const current = this.cleanup(room.code);
+    if (!current || current.version !== room.version) {
+      throw Object.assign(new Error('Room changed or expired; retry the action.'), { code: 'ROOM_CONFLICT' });
+    }
+    const next = { ...room, version: room.version + 1 };
+    room.version = next.version;
+    this.rooms.set(room.code, structuredClone(next));
+  }
+  async deleteRoom(room) {
+    const current = this.cleanup(room.code);
+    if (!current) return;
+    if (current.version !== room.version) {
+      throw Object.assign(new Error('Room changed; retry the action.'), { code: 'ROOM_CONFLICT' });
+    }
+    this.rooms.delete(room.code);
+  }
+  async listActiveRooms() {
+    for (const code of [...this.rooms.keys()]) this.cleanup(code);
+    return [...this.rooms.keys()];
+  }
+  close() { this.rooms.clear(); }
+}
+
+module.exports = { RoomStore, MemoryRoomStore };
