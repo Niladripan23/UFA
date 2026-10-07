@@ -38,13 +38,21 @@ function validateData(rows, kind) {
   });
 }
 
-function loadGameData(directory = path.resolve(__dirname, 'data')) {
+function loadGameData(directory = path.resolve(__dirname, 'data'), { allowMissing = false } = {}) {
   const data = {};
   for (const kind of ['players', 'managers']) {
     const file = path.resolve(directory, `${kind}.json`);
     let rows;
-    try { rows = JSON.parse(fs.readFileSync(file, 'utf8')); }
-    catch (error) { throw new Error(`Cannot load required ${file}: ${error.code || 'invalid JSON'}. Supply the real game dataset before starting UFA.`); }
+    try {
+      rows = JSON.parse(fs.readFileSync(file, 'utf8'));
+    } catch (error) {
+      if (allowMissing && error.code === 'ENOENT') {
+        console.warn(`UFA game data missing: ${file}. Lobby Create/Join remains available; Start Auction is disabled.`);
+        data[kind] = [];
+        continue;
+      }
+      throw new Error(`Cannot load required ${file}: ${error.code || 'invalid JSON'}. Supply the real game dataset before starting an auction.`);
+    }
     data[kind] = validateData(rows, kind);
     console.log(`Loaded ${data[kind].length} ${kind}`);
   }
