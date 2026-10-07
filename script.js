@@ -2,22 +2,89 @@
 // UFA — CLIENT ENGINE (Optimized 3-2-1, Phase Ads & Fixed Stage)
 // ====================================================
 
-const AUCTION_SERVER_URL = window.location.hostname.endsWith('github.io')
-  ? 'https://ufa-test-v2.onrender.com'
-  : window.location.origin;
-
-const socket = io(AUCTION_SERVER_URL, {
+const socket = io(window.UFA_CONFIG.backendUrl, {
   reconnection: true,
-  reconnectionAttempts: 10,
-  timeout: 20000
+  reconnectionAttempts: Infinity,
+  reconnectionDelayMax: 5000,
+  timeout: 20000,
+  transports: ['polling', 'websocket']
 });
+
+const SESSION_KEY = 'ufa-session-v1:' + window.UFA_CONFIG.backendUrl;
+let session = null;
+try { session = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch {}
+let sessionReady = false;
+let authPending = false;
+let actionPending = false;
+let resumeTimer = null;
+
+function saveSession(value) {
+  session = value;
+  try {
+    if (value) sessionStorage.setItem(SESSION_KEY, JSON.stringify(value));
+    else sessionStorage.removeItem(SESSION_KEY);
+  } catch { showMessage('Browser storage is blocked. Keep this tab open to retain your club session.'); }
+}
+function showMessage(message = '') {
+  for (const id of ['auth-error', 'network-message']) {
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.hidden = !message || (id === 'network-message' && !currentRoom);
+  }
+}
+function updateConnection(label) {
+  document.getElementById('connection-status').textContent = label;
+  document.getElementById('live-dot').style.background = socket.connected && sessionReady ? 'var(--accent-green)' : 'var(--accent-amber)';
+  if (!socket.connected || !sessionReady) document.getElementById('phase-indicator').textContent = label;
+  updateControls();
+}
+function updateControls() {
+  document.getElementById('auth-submit-btn').disabled = !socket.connected || authPending || Boolean(session && !sessionReady);
+  const unavailable = !socket.connected || !sessionReady || actionPending;
+  for (const id of ['host-start-btn', 'lobby-start-btn', 'host-pause-btn', 'host-close-btn']) document.getElementById(id).disabled = unavailable;
+  for (const id of ['btn-raise-bid', 'btn-pass']) document.getElementById(id).disabled = unavailable || !currentRoom || currentRoom.status !== 'LIVE' || currentRoom.phase !== 'BIDDING' || currentRoom.isPaused;
+}
+function request(event, payload) {
+  return new Promise(resolve => {
+    if (!socket.connected) return resolve({ ok: false, error: 'DISCONNECTED', message: 'Reconnecting to the server. Please wait.' });
+    socket.timeout(12000).emit(event, payload, (error, response) => resolve(error
+      ? { ok: false, error: 'TIMEOUT', message: 'The server did not respond. Your session is saved; reconnecting will recover a completed request.' }
+      : response || { ok: false, error: 'SERVER_UNAVAILABLE', message: 'Server unavailable. Please retry.' }));
+  });
+}
+function newSessionToken() {
+  return Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('');
+}
+async function resumeSession() {
+  if (!socket.connected || !session || authPending) return;
+  authPending = true; updateConnection('Restoring your club…');
+  const result = await request('resume_session', session);
+  authPending = false;
+  if (result.ok) acceptSession(result);
+  else if (['ROOM_NOT_FOUND', 'SESSION_EXPIRED', 'INVALID_SESSION', 'INVALID_CODE'].includes(result.error)) {
+    saveSession(null); currentRoom = null; myTeamId = null; sessionReady = false;
+    document.getElementById('room-auth-modal').classList.add('active');
+    updateConnection('Connected'); showMessage(result.message);
+  } else {
+    showMessage(result.message); updateConnection('Reconnecting…');
+    clearTimeout(resumeTimer); resumeTimer = setTimeout(resumeSession, result.error === 'RATE_LIMITED' ? 15000 : 5000);
+  }
+}
+async function sendAction(event, extra = {}) {
+  if (!currentRoom || actionPending || !sessionReady || !socket.connected) return;
+  actionPending = true; updateControls();
+  const result = await request(event, { roomCode: currentRoom.code, requestId: crypto.randomUUID(), lotIndex: currentRoom.currentIndex, ...extra });
+  actionPending = false;
+  if (!result.ok) showMessage(result.message);
+  else { if (result.room) acceptRoom(result.room); showMessage(currentRoom?.recoveryNotice || ''); }
+  updateControls();
+}
 
 let currentRoom = null;
 let myTeamId = null;
 let currentAuthMode = 'create';
 
-// Tracks role transitions for 5s interstitial ad trigger
-let lastSeenPhase = null;
+// The server clock controls phase ads as well as bidding.
 let isShowingPhaseBreak = false;
 let lotResultTimer = null;
 
@@ -81,67 +148,58 @@ function autoGenerateCredentials() {
   updateCharCount('inp-room-pass', 'pass-count', 8);
 }
 
-function handleAuthSubmit() {
-  const roomCode = document.getElementById('inp-room-code').value.trim();
-  const password = document.getElementById('inp-room-pass').value.trim();
+async function handleAuthSubmit() {
+  if (authPending || !socket.connected) return;
+  const roomCode = document.getElementById('inp-room-code').value.trim().toUpperCase();
+  const password = document.getElementById('inp-room-pass').value;
   const teamName = document.getElementById('inp-team-name').value.trim();
-
-  if (!ROOM_CODE_REGEX.test(roomCode)) {
-    alert("❌ Invalid Room Code!\nMust be exactly 12 alphanumeric characters.");
-    return;
+  if (!ROOM_CODE_REGEX.test(roomCode)) return showMessage('Room code must be exactly 12 alphanumeric characters.');
+  if (!PASSWORD_REGEX.test(password)) return showMessage('Password must be exactly 8 alphanumeric characters.');
+  if (!teamName || teamName.length > 24) return showMessage('Club name must be 1–24 characters.');
+  if (!session || session.roomCode !== roomCode) saveSession({ roomCode, teamId: null, sessionToken: newSessionToken() });
+  authPending = true; updateControls(); showMessage('');
+  const payload = { roomCode, password, teamName, sessionToken: session.sessionToken };
+  if (currentAuthMode === 'create') Object.assign(payload, {
+    adminTeamName: teamName, maxTeams: Number(document.getElementById('cfg-max-teams').value),
+    startingBudget: Number(document.getElementById('cfg-budget').value), categoryFilter: document.getElementById('cfg-category').value
+  });
+  const result = await request(currentAuthMode === 'create' ? 'create_room' : 'join_room', payload);
+  authPending = false;
+  if (result.ok) acceptSession(result);
+  else {
+    showMessage(result.message);
+    if (['TIMEOUT', 'DISCONNECTED', 'SERVER_UNAVAILABLE', 'ROOM_CONFLICT'].includes(result.error)) {
+      clearTimeout(resumeTimer); resumeTimer = setTimeout(resumeSession, 1500);
+    } else saveSession(null);
   }
-  if (!PASSWORD_REGEX.test(password)) {
-    alert("❌ Invalid Password!\nMust be exactly 8 alphanumeric characters.");
-    return;
-  }
-  if (!teamName) {
-    alert("❌ Please enter your Club Name!");
-    return;
-  }
-
-  if (currentAuthMode === 'create') {
-    const maxTeams = parseInt(document.getElementById('cfg-max-teams').value, 10);
-    const budget = parseInt(document.getElementById('cfg-budget').value, 10);
-    const category = document.getElementById('cfg-category').value;
-
-    socket.emit('create_room', {
-      roomCode,
-      password,
-      adminTeamName: teamName,
-      maxTeams,
-      startingBudget: budget,
-      categoryFilter: category
-    });
-  } else {
-    socket.emit('join_room', { roomCode, password, teamName });
-  }
+  updateControls();
 }
 
 // --- 2. HOST CONTROLS ---
 function handleStartAuction(e) {
   if (e) e.preventDefault();
   if (!currentRoom) return;
-  socket.emit('start_auction', { roomCode: currentRoom.code });
+  sendAction('start_auction');
 }
 
 function handleTogglePause(e) {
   if (e) e.preventDefault();
   if (!currentRoom) return;
-  socket.emit('host_toggle_pause', { roomCode: currentRoom.code });
+  sendAction('host_toggle_pause', { isPaused: !currentRoom.isPaused });
 }
 
 function handleCloseRoom(e) {
   if (e) e.preventDefault();
   if (!currentRoom) return;
   if (confirm("Are you sure you want to shut down this auction room? All players will be disconnected.")) {
-    socket.emit('host_close_room', { roomCode: currentRoom.code });
+    sendAction('host_close_room');
   }
 }
 
 function handleKickTeam(teamId) {
   if (!currentRoom) return;
   if (confirm("Kick this club from the auction floor?")) {
-    socket.emit('host_kick_player', { roomCode: currentRoom.code, targetTeamId: teamId });
+    sendAction('host_kick_player', { targetTeamId: teamId });
   }
 }
 
@@ -149,13 +207,13 @@ function handleKickTeam(teamId) {
 function emitRaiseBid(e) {
   if (e) e.preventDefault();
   if (!currentRoom || isShowingPhaseBreak) return;
-  socket.emit('raise_bid', { roomCode: currentRoom.code });
+  sendAction('raise_bid');
 }
 
 function emitPassBid(e) {
   if (e) e.preventDefault();
   if (!currentRoom || isShowingPhaseBreak) return;
-  socket.emit('pass_bid', { roomCode: currentRoom.code });
+  sendAction('pass_bid');
 }
 
 function showLotResult(roomSnapshot) {
@@ -204,31 +262,23 @@ function showLotResult(roomSnapshot) {
 }
 
 socket.on('connect', () => {
-  const phaseIndicator = document.getElementById('phase-indicator');
-  const liveDot = document.getElementById('live-dot');
-
-  if (phaseIndicator && !currentRoom) {
-    phaseIndicator.textContent = 'LOBBY: SERVER CONNECTED';
-  }
-
-  if (liveDot) {
-    liveDot.style.background = 'var(--accent-green)';
-  }
+  sessionReady = !session;
+  updateConnection('Connected');
+  if (session) resumeSession();
 });
-
-socket.on('connect_error', () => {
-  const phaseIndicator = document.getElementById('phase-indicator');
-  const liveDot = document.getElementById('live-dot');
-
-  if (phaseIndicator && !currentRoom) {
-    phaseIndicator.textContent = window.location.hostname.endsWith('github.io')
-      ? 'BACKEND NOT RUNNING FOR THIS COPY'
-      : 'CONNECTING TO AUCTION SERVER...';
-  }
-
-  if (liveDot) {
-    liveDot.style.background = 'var(--accent-amber)';
-  }
+socket.on('disconnect', reason => {
+  sessionReady = false; actionPending = false;
+  updateConnection('Reconnecting…');
+  if (currentRoom) showMessage('Connection lost. Your club is saved; reconnecting…');
+  if (reason === 'io server disconnect' && session) setTimeout(() => socket.connect(), 1500);
+});
+socket.io.on('reconnect_attempt', () => updateConnection('Reconnecting…'));
+socket.on('connect_error', () => updateConnection('Server unavailable — retrying…'));
+socket.on('server_restarting', () => showMessage('Server restarting. Your club will resume automatically.'));
+socket.on('session_replaced', () => {
+  saveSession(null); sessionReady = false; socket.disconnect();
+  showMessage('This club is now open in another tab. Reload to join a different club.');
+  updateConnection('Session moved to another tab');
 });
 
 function copyLobbyRoomCode() {
@@ -267,48 +317,63 @@ function renderLobbySlots(room) {
 
     const status = document.createElement('small');
     status.className = 'mobile-slot-status';
-    status.textContent = team ? 'Connected' : 'Waiting…';
+    status.textContent = team ? (team.connected ? 'Connected' : 'Reconnecting…') : 'Waiting…';
     slot.append(circle, label, status);
     row.appendChild(slot);
   }
 }
 
 // --- 4. SOCKET EVENT LISTENERS ---
-socket.on('room_joined', ({ room, myTeamId: id }) => {
-  currentRoom = room;
+function acceptSession({ room, myTeamId: id }) {
   myTeamId = id;
-
-  const authModal = document.getElementById('room-auth-modal');
-  if (authModal) authModal.classList.remove('active');
-
-  const myTeam = room.teams.find(t => t.id === myTeamId);
-  const clubDisplay = document.getElementById('my-club-display');
-  if (clubDisplay) clubDisplay.textContent = myTeam ? myTeam.name : 'Connected';
-
-  renderRoomState(room);
-  logEvent(`Joined Room <strong>${room.code}</strong> as <strong>${myTeam ? myTeam.name : 'Manager'}</strong>`, 'system');
-});
-
-socket.on('room_state_updated', (room) => {
+  saveSession({ roomCode: room.code, teamId: id, sessionToken: session.sessionToken });
+  sessionReady = true;
+  currentRoom = null;
+  document.getElementById('room-auth-modal').classList.remove('active');
+  acceptRoom(room);
+  updateConnection('Connected');
+  showMessage(room.recoveryNotice || '');
+  const team = room.teams.find(t => t.id === id);
+  logEvent('Joined Room ' + room.code + ' as ' + (team ? team.name : 'Manager'), 'system');
+}
+function acceptRoom(room) {
+  if (!myTeamId || (currentRoom && room.version < currentRoom.version)) return;
   currentRoom = room;
   renderRoomState(room);
+  renderClock(room);
+  updateControls();
+  if (room.recoveryNotice) showMessage(room.recoveryNotice);
+  const modal = document.getElementById('ai-modal');
+  if (modal.classList.contains('active')) openAnalysisModal();
+}
+socket.on('room_state_updated', acceptRoom);
+socket.on('bid_placed', ({ room, log }) => { acceptRoom(room); if (log) logEvent(log, 'bid'); });
+socket.on('lot_concluded', ({ room, log, result }) => {
+  if (result) showLotResult({ pool: [result.item], currentIndex: 0, highestBidder: result.winner, currentBid: result.price });
+  acceptRoom(room); if (log) logEvent(log, 'sold');
 });
-
-socket.on('bid_placed', ({ room, log }) => {
-  currentRoom = room;
-  renderRoomState(room);
-  logEvent(log, 'bid');
+socket.on('clock_state', state => {
+  if (!currentRoom || state.version < currentRoom.version) return;
+  Object.assign(currentRoom, state);
+  renderClock(currentRoom); updateControls();
 });
-
-socket.on('lot_concluded', ({ room, log }) => {
-  showLotResult(currentRoom);
-  currentRoom = room;
-  renderRoomState(room);
-  logEvent(log, 'sold');
-});
+function renderClock(room) {
+  renderHammerClock(room.timer);
+  renderInterstitial(room.phase === 'INTERSTITIAL' ? room.interstitialTimer : 0);
+  const phaseOverlay = document.getElementById('phase-break-overlay');
+  isShowingPhaseBreak = room.phaseBreakTimer > 0;
+  phaseOverlay.classList.toggle('active', isShowingPhaseBreak);
+  if (isShowingPhaseBreak) {
+    document.getElementById('phase-ad-countdown').textContent = room.phaseBreakTimer;
+    const previousRole = room.lastResult?.item.primaryRole;
+    document.getElementById('phase-break-title').textContent = previousRole === 'manager' ? 'MANAGERS DRAFT COMPLETE' : 'MIDFIELDERS DRAFT COMPLETE';
+  }
+  document.getElementById('timer-box').classList.toggle('paused', room.isPaused);
+  document.getElementById('host-pause-btn').textContent = room.isPaused ? '▶ Resume' : '⏸ Pause';
+}
 
 // 12s Hammer countdown tick
-socket.on('timer_tick', (timeLeft) => {
+function renderHammerClock(timeLeft) {
   const timerEl = document.getElementById('timer');
   const timerBox = document.getElementById('timer-box');
   const timerLabel = document.getElementById('timer-label');
@@ -320,18 +385,20 @@ socket.on('timer_tick', (timeLeft) => {
     if (timeLeft <= 4) timerBox.classList.add('urgent');
     else timerBox.classList.remove('urgent');
   }
-});
+}
 
 // 35% FASTER CLEAN 3-2-1 TRANSITION (NO VIOLET, NO BOOM WORD)
-socket.on('interstitial_tick', (secondsLeft) => {
+function renderInterstitial(secondsLeft) {
   const overlay = document.getElementById('interstitial-overlay');
   const textEl = document.getElementById('countdown-boom-text');
   const subEl = document.getElementById('boom-sub-text');
   const timerLabel = document.getElementById('timer-label');
   const timerEl = document.getElementById('timer');
 
-  if (timerLabel) timerLabel.textContent = "NEXT LOT";
-  if (timerEl) timerEl.textContent = secondsLeft;
+  if (secondsLeft > 0) {
+    if (timerLabel) timerLabel.textContent = "NEXT LOT";
+    if (timerEl) timerEl.textContent = secondsLeft;
+  }
 
   if (overlay) overlay.classList.add('active');
 
@@ -354,51 +421,25 @@ socket.on('interstitial_tick', (secondsLeft) => {
     // 0s: Dismiss immediately, no BOOM display
     if (overlay) overlay.classList.remove('active');
   }
-});
+}
 
-socket.on('pause_state_changed', ({ isPaused }) => {
-  const timerBox = document.getElementById('timer-box');
-  const pauseBtn = document.getElementById('host-pause-btn');
-  if (isPaused) {
-    if (timerBox) timerBox.classList.add('paused');
-    if (pauseBtn) pauseBtn.textContent = "▶ Resume";
-    logEvent("⏸ Host has paused the auction clock.", "pass");
-  } else {
-    if (timerBox) timerBox.classList.remove('paused');
-    if (pauseBtn) pauseBtn.textContent = "⏸ Pause";
-    logEvent("▶ Auction clock resumed!", "system");
-  }
+function leaveRoom(message) {
+  saveSession(null); currentRoom = null; myTeamId = null; sessionReady = false;
+  document.getElementById('room-auth-modal').classList.add('active');
+  showMessage(message); updateControls();
+}
+socket.on('room_closed', () => leaveRoom('The room was closed or expired.'));
+socket.on('you_were_kicked', () => leaveRoom('The host removed your club from the lobby.'));
+socket.on('auction_finished', ({ room, log, result }) => {
+  if (result) showLotResult({ pool: [result.item], currentIndex: 0, highestBidder: result.winner, currentBid: result.price });
+  acceptRoom(room); if (log) logEvent(log, 'sold');
+  setTimeout(openAnalysisModal, 750);
 });
-
-socket.on('room_closed', () => {
-  alert("The host closed this auction room.");
-  window.location.reload();
-});
-
-socket.on('you_were_kicked', () => {
-  alert("You were removed from the room by the host.");
-  window.location.reload();
-});
-
-socket.on('auction_finished', ({ room, log }) => {
-  showLotResult(currentRoom);
-  currentRoom = room;
-  renderRoomState(room);
-  logEvent(log, 'sold');
-
-  setTimeout(() => {
-    alert("🎉 AUCTION COMPLETE! All positions filled.");
-    openAnalysisModal();
-  }, 750);
-});
-
-socket.on('error_msg', (msg) => {
-  alert(msg);
-});
+socket.on('error_msg', error => showMessage(typeof error === 'string' ? error : error.message));
 
 // --- 5. RENDER CURRENT ROOM STATE ---
 function renderRoomState(room) {
-  const isHost = room.adminSocketId === myTeamId;
+  const isHost = room.hostTeamId === myTeamId;
   const hostStartBtn = document.getElementById('host-start-btn');
   const hostLiveControls = document.getElementById('host-live-controls');
 
@@ -429,7 +470,7 @@ function renderRoomState(room) {
 
     const phaseEl = document.getElementById('phase-indicator');
     if (phaseEl) {
-      phaseEl.textContent = `AUCTION LOBBY • ${room.teams.length}/${room.maxTeams} CLUBS CONNECTED`;
+      phaseEl.textContent = `AUCTION LOBBY • ${room.teams.filter(t => t.connected).length}/${room.maxTeams} CLUBS CONNECTED`;
     }
 
     const activityTitle = document.getElementById('activity-panel-title');
@@ -466,7 +507,7 @@ function renderRoomState(room) {
         : room.categoryFilter.replace(/\b\w/g, ch => ch.toUpperCase());
     }
     if (maxTeamsEl) maxTeamsEl.textContent = room.maxTeams;
-    if (progressEl) progressEl.textContent = `${room.teams.length} / ${room.maxTeams} clubs connected`;
+    if (progressEl) progressEl.textContent = `${room.teams.filter(t => t.connected).length} / ${room.maxTeams} clubs connected`;
     if (waitNote) {
       waitNote.textContent = room.teams.length >= room.maxTeams
         ? 'All clubs connected. Ready for kickoff.'
@@ -494,10 +535,14 @@ function renderRoomState(room) {
   if (hostLiveControls) hostLiveControls.style.display = isHost ? 'flex' : 'none';
 
   const item = room.pool[room.currentIndex];
-  if (!item) return;
+  if (!item) {
+    renderTeams(room, isHost);
+    if (room.status === 'FINISHED') document.getElementById('phase-indicator').textContent = 'AUCTION COMPLETE';
+    return;
+  }
 
   // 3. 5-Second Static Ad Check across Phase Transitions (After Managers, After Midfielders)
-  checkPhaseTransitionAd(item.primaryRole);
+  // Phase transitions are synchronized by the server clock.
 
   const isManager = item.category === 'manager';
   const phaseIndicator = document.getElementById('phase-indicator');
@@ -592,46 +637,8 @@ function renderRoomState(room) {
   renderTeams(room, isHost);
 }
 
-// 5-SECOND TRANSITION AD HANDLER
-function checkPhaseTransitionAd(newRole) {
-  if (!lastSeenPhase) {
-    lastSeenPhase = newRole;
-    return;
-  }
-
-  // Detect: Manager -> Midfielder, or Midfielder -> Forward transition
-  const isManagerDone = (lastSeenPhase === 'manager' && newRole === 'midfielder');
-  const isMidfielderDone = (lastSeenPhase === 'midfielder' && newRole === 'forward');
-
-  if ((isManagerDone || isMidfielderDone) && !isShowingPhaseBreak) {
-    triggerPhaseBreakAd(isManagerDone ? "MANAGERS DRAFT COMPLETE" : "MIDFIELDERS DRAFT COMPLETE");
-  }
-
-  lastSeenPhase = newRole;
-}
-
-function triggerPhaseBreakAd(title) {
-  isShowingPhaseBreak = true;
-  const overlay = document.getElementById('phase-break-overlay');
-  const titleEl = document.getElementById('phase-break-title');
-  const countdownEl = document.getElementById('phase-ad-countdown');
-
-  if (titleEl) titleEl.textContent = title;
-  if (overlay) overlay.classList.add('active');
-
-  let remaining = 5;
-  if (countdownEl) countdownEl.textContent = remaining;
-
-  const timer = setInterval(() => {
-    remaining--;
-    if (countdownEl) countdownEl.textContent = remaining;
-
-    if (remaining <= 0) {
-      clearInterval(timer);
-      if (overlay) overlay.classList.remove('active');
-      isShowingPhaseBreak = false;
-    }
-  }, 1000);
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 }
 
 function renderTeams(room, isHost) {
@@ -640,7 +647,7 @@ function renderTeams(room, isHost) {
     const isLeader = room.highestBidder && room.highestBidder.id === t.id;
     const hasPassed = room.passedTeamIds.includes(t.id);
     const isMe = t.id === myTeamId;
-    const canKick = isHost && !t.isHost;
+    const canKick = isHost && !t.isHost && room.status === 'LOBBY';
 
     const m = t.manager ? 1 : 0;
     const fwd = t.squad.filter(p => p.primaryRole === 'forward').length;
@@ -659,7 +666,7 @@ function renderTeams(room, isHost) {
         <div class="team-meta">
           <div class="team-name-wrap">
             <div class="team-name-line">
-              <span class="team-name">${t.name}</span>
+              <span class="team-name">${escapeHTML(t.name)}</span>
               ${isMe ? '<span class="you-badge">YOU</span>' : ''}
               ${room.status === 'LOBBY' && t.isHost ? '<span class="host-badge">HOST</span>' : ''}
             </div>
@@ -724,8 +731,9 @@ function logEvent(msg, type) {
   if (!stream) return;
   const item = document.createElement('div');
   item.className = `log-item ${type}`;
-  item.innerHTML = msg;
+  item.textContent = msg;
   stream.prepend(item);
+  while (stream.children.length > 100) stream.lastElementChild.remove();
   const count = document.getElementById('lobby-activity-count');
   if (count) count.textContent = stream.children.length + (stream.children.length === 1 ? ' activity' : ' activities');
 }
@@ -741,15 +749,15 @@ function openAnalysisModal() {
     <div class="ai-team-card">
       <div class="ai-team-head">
         <div>
-          <h3 style="font-family: var(--font-display);">${team.name}</h3>
-          <span class="hint">${team.manager ? 'Manager: ' + team.manager : 'No Manager'} • Purse: ${team.purse} Coins</span>
+          <h3 style="font-family: var(--font-display);">${escapeHTML(team.name)}</h3>
+          <span class="hint">${team.manager ? 'Manager: ' + escapeHTML(team.manager) : 'No Manager'} • Purse: ${team.purse} Coins</span>
         </div>
         <div class="ai-score-badge">Total Squad: ${team.squad.length + (team.manager ? 1 : 0)}/12</div>
       </div>
       <div class="ai-roster-tags">
-        ${team.manager ? `<span class="player-chip" style="border-color: #d8b4fe; color: #7e22ce;">👔 ${team.manager} (MGR)</span>` : ''}
+        ${team.manager ? `<span class="player-chip" style="border-color: #d8b4fe; color: #7e22ce;">👔 ${escapeHTML(team.manager)} (MGR)</span>` : ''}
         ${team.squad.length > 0 
-          ? team.squad.map(p => `<span class="player-chip">${p.name} (${p.position}) - ${p.boughtFor}🪙</span>`).join('') 
+          ? team.squad.map(p => `<span class="player-chip">${escapeHTML(p.name)} (${escapeHTML(p.position)}) - ${p.boughtFor}🪙</span>`).join('') 
           : '<span class="hint">No outfield players drafted yet.</span>'}
       </div>
     </div>

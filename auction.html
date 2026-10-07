@@ -18,6 +18,8 @@
       <div class="logo-badge" style="width: max-content; margin: 0 auto 12px auto;">UFA™</div>
       <h2>Auction Room Setup</h2>
       <p class="hint" style="margin-bottom: 16px;">Multiplayer live auction floor</p>
+      <p id="connection-status" class="hint" role="status" aria-live="polite">Connecting…</p>
+      <p id="auth-error" class="hint" role="alert" hidden></p>
 
       <div class="auth-tabs">
         <button type="button" class="tab-btn active" id="tab-create-btn" onclick="toggleAuthTab('create')">Host New Room</button>
@@ -82,7 +84,7 @@
       </div>
 
       <div style="margin-top: 18px;">
-        <button type="button" id="auth-submit-btn" class="btn-action btn-bid" style="width: 100%;" onclick="handleAuthSubmit()">Create & Host Room</button>
+        <button type="button" id="auth-submit-btn" class="btn-action btn-bid" style="width: 100%;" onclick="handleAuthSubmit()" disabled>Create & Host Room</button>
       </div>
     </div>
   </div>
@@ -338,6 +340,8 @@
     </div>
   </div>
 
+  <p id="network-message" role="status" hidden style="position: fixed; bottom: 12px; left: 12px; right: 12px; z-index: 9999; margin: 0; padding: 10px 14px; background: #fff; color: #152334; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;"></p>
+  <script src="client-config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
