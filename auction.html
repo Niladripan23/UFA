@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+  
 </head>
 <body>
 
@@ -341,7 +341,47 @@
   </div>
 
   <p id="network-message" role="status" hidden style="position: fixed; bottom: 12px; left: 12px; right: 12px; z-index: 9999; margin: 0; padding: 10px 14px; background: #fff; color: #152334; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;"></p>
-  <script src="client-config.js"></script>
-  <script src="script.js"></script>
+  <script>
+    // Prefer the Socket.IO client served by our own backend. If that fails,
+    // retry the public CDN before loading the game engine.
+    (function loadAuctionClient() {
+      const status = document.getElementById('connection-status');
+      const authError = document.getElementById('auth-error');
+
+      function showLoadError(message) {
+        if (status) status.textContent = message;
+        if (authError) {
+          authError.textContent = message;
+          authError.hidden = false;
+        }
+      }
+      function loadScript(src, onLoad, onError) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = onLoad;
+        script.onerror = onError;
+        document.body.appendChild(script);
+      }
+      function loadGame() {
+        loadScript('./client-config.js?v=20261009a', function () {
+          loadScript('./script.js?v=20261009a', function () {},
+            function () { showLoadError('Could not load UFA multiplayer code. Please reload this page.'); });
+        }, function () { showLoadError('Could not load UFA connection settings. Please reload this page.'); });
+      }
+      const backend = window.location.hostname === 'niladripan23.github.io'
+        ? 'https://ufa-test-v2.onrender.com'
+        : window.location.origin;
+      loadScript(backend + '/socket.io/socket.io.js', loadGame, function () {
+        loadScript('https://cdn.socket.io/4.8.3/socket.io.min.js', loadGame, function () {
+          showLoadError('Could not load the multiplayer connection library. Check your network and reload.');
+        });
+      });
+      setTimeout(function () {
+        if (status && status.textContent.trim() === 'Connecting…') {
+          showLoadError('Still connecting to the server. Check your internet connection and reload this page.');
+        }
+      }, 20000);
+    })();
+  </script>
 </body>
 </html>
