@@ -149,6 +149,28 @@ body {
   color: var(--accent-red);
 }
 
+.btn-end-game {
+  background: transparent;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  padding: 8px 11px;
+  font: 700 0.75rem var(--font-display);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-end-game:hover { background: #fef2f2; }
+.btn-end-game:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-end-game[hidden] { display: none !important; }
+body.lobby-mode .btn-end-game { color: #fecaca; border-color: #7f3841; background: rgb(127 38 43 / 20%); }
+body.lobby-mode .btn-end-game:hover { background: rgb(127 38 43 / 38%); }
+@media (max-width: 760px) {
+  .btn-end-game { min-height: 38px; padding: 7px 8px; font-size: 0.68rem; }
+}
+@media (max-width: 430px) {
+  .btn-end-game { padding: 7px 6px; font-size: 0.62rem; }
+}
+
 /* 3-COLUMN MAIN LAYOUT */
 .auction-grid {
   flex: 1;
