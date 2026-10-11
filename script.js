@@ -41,6 +41,8 @@ function updateConnection(label) {
 function updateControls() {
   document.getElementById('auth-submit-btn').disabled = !socket.connected || authPending || Boolean(session && !sessionReady);
   const unavailable = !socket.connected || !sessionReady || actionPending;
+  const endGameBtn = document.getElementById('end-game-btn');
+  if (endGameBtn) endGameBtn.disabled = unavailable || !currentRoom;
   for (const id of ['host-start-btn', 'lobby-start-btn', 'host-pause-btn', 'host-close-btn']) document.getElementById(id).disabled = unavailable;
   for (const id of ['btn-raise-bid', 'btn-pass']) document.getElementById(id).disabled = unavailable || !currentRoom || currentRoom.status !== 'LIVE' || currentRoom.phase !== 'BIDDING' || currentRoom.isPaused;
 }
@@ -194,6 +196,31 @@ function handleCloseRoom(e) {
   if (confirm("Are you sure you want to shut down this auction room? All players will be disconnected.")) {
     sendAction('host_close_room');
   }
+}
+
+async function handleEndGame() {
+  if (!currentRoom || !myTeamId || authPending || actionPending) return;
+  const isHost = currentRoom.hostTeamId === myTeamId;
+  const prompt = isHost
+    ? 'End this game for EVERY club? The room and its auction progress will be permanently closed.'
+    : 'Leave this game and start fresh? Your club will exit, but other clubs can keep playing.';
+  if (!confirm(prompt)) return;
+  if (!socket.connected || !sessionReady) return showMessage('Reconnect before ending your game.');
+  actionPending = true;
+  updateControls();
+  const result = await request(isHost ? 'host_close_room' : 'leave_room', {
+    roomCode: currentRoom.code, requestId: crypto.randomUUID(), lotIndex: currentRoom.currentIndex
+  });
+  actionPending = false;
+  if (!result.ok) {
+    showMessage(result.message);
+    updateControls();
+    return;
+  }
+  // A successful server acknowledgement guarantees the old session is no longer valid.
+  clearTimeout(resumeTimer);
+  saveSession(null);
+  window.location.assign('./auction.html?fresh=' + Date.now());
 }
 
 function handleKickTeam(teamId) {
@@ -440,6 +467,8 @@ socket.on('error_msg', error => showMessage(typeof error === 'string' ? error : 
 // --- 5. RENDER CURRENT ROOM STATE ---
 function renderRoomState(room) {
   const isHost = room.hostTeamId === myTeamId;
+  const endGameBtn = document.getElementById('end-game-btn');
+  if (endGameBtn) endGameBtn.hidden = false;
   const hostStartBtn = document.getElementById('host-start-btn');
   const hostLiveControls = document.getElementById('host-live-controls');
 
