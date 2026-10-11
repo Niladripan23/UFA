@@ -204,6 +204,30 @@ async function createApplication({ config = loadConfig(), data = loadGameData(un
       });
     }, true);
 
+    // A guest may quit without closing the auction for everybody.
+    request('leave_room', input => serial(game.roomCode(input.roomCode), async () => {
+      const room = await ownedRoom(game.roomCode(input.roomCode));
+      const team = member(socket, room);
+      if (team.isHost) game.fail('HOST_ONLY', 'The host must end the room for all clubs.');
+      if (room.status === 'LIVE') {
+        // Keep purchased squads and any leading bid in the auction history.
+        // Invalidate this session so a fresh game cannot silently resume it.
+        team.connected = false;
+        team.disconnectedAt = Date.now();
+        team.connectionId = null;
+        team.sessionHash = null;
+        if (!room.teams.some(other => other.connected)) game.setPaused(room, true, Date.now());
+      } else {
+        room.teams = room.teams.filter(other => other.id !== team.id);
+      }
+      touch(room);
+      await store.saveRoom(room);
+      socket.leave(room.code);
+      socket.data = {};
+      broadcast(room);
+      return {};
+    }));
+
     for (const event of ['start_auction', 'raise_bid', 'pass_bid', 'host_toggle_pause', 'host_kick_player', 'host_close_room']) {
       request(event, input => serial(game.roomCode(input.roomCode), async () => {
         const room = await ownedRoom(game.roomCode(input.roomCode));
