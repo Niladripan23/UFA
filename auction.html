@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20261011-endgame" />
   
 </head>
 <body>
@@ -103,6 +103,7 @@
     
     <!-- ADMIN & ACTION BUTTONS -->
     <div class="admin-controls">
+      <button type="button" id="end-game-btn" class="btn-end-game" onclick="handleEndGame()" hidden>↩ End Game</button>
       <button type="button" class="btn-ai-open" onclick="openAnalysisModal()">⚡ Squads Overview</button>
       <button type="button" id="host-start-btn" class="btn-gold" style="display: none;" onclick="handleStartAuction(event)">Start Auction ▶</button>
       
@@ -363,8 +364,8 @@
         document.body.appendChild(script);
       }
       function loadGame() {
-        loadScript('./client-config.js?v=20261009a', function () {
-          loadScript('./script.js?v=20261009a', function () {},
+        loadScript('./client-config.js?v=20261011-endgame', function () {
+          loadScript('./script.js?v=20261011-endgame', function () {},
             function () { showLoadError('Could not load UFA multiplayer code. Please reload this page.'); });
         }, function () { showLoadError('Could not load UFA connection settings. Please reload this page.'); });
       }
